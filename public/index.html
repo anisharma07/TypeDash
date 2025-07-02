@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, user-scalable=yes" />
-    <title>.EXE type | Speed typing game</title>
+    <title>Type Dash | Speed typing game</title>
     <!-- box icons -->
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
@@ -39,8 +39,8 @@
         class="typing-on-phone"
       />
     </nav>
-    <form id="entry-form" action="multiplayer.html">
-      <div class="avatar-div focus-glassmorphism">
+    <form id="entry-form" action="multiplayer.html" class="">
+      <div class="avatar-div focus-glassmorphism ">
         <img
           src="./images/arrows.png"
           alt="arrow-keys"
@@ -262,7 +262,6 @@
       </div>
 
       <div class="username-identity glassmorphism">
-      
         <img src="images/tab.png" alt="tab" class="focus-tab" />
         <div class="details-box">
           <div class="details">
@@ -275,7 +274,6 @@
               name="Device"
               value="Laptop"
               class="Device-logged-in"
-              
             />
             <input
               type="text"
@@ -303,31 +301,38 @@
           </div>
 
           <div class="details contact-page">
-        <img src="images/modal-binding.png" alt="modalbind" class="rules-modal-bind">
+            <img
+              src="images/modal-binding.png"
+              alt="modalbind"
+              class="rules-modal-bind hidden"
+            />
 
-            <div class="rules-modal">
+            <div class="rules-modal hidden">
               <h2>Exciting prize for winners</h2>
               <ul>
                 <li>To participate, fill the contact else type none.</li>
                 <li>Format: Name/contact.</li>
-                <li>contact may be email id, phone no., insta id,
-                  or any other social media through which we can reach you out.</li>
+                <li>
+                  contact may be email id, phone no., insta id, or any other
+                  social media through which we can reach you out.
+                </li>
               </ul>
             </div>
-            <label for="identity">Contact:</label>
+            <label for="identity" class="hidden">Contact:</label>
             <input
               type="text"
               id="identity"
               name="identity"
               autocomplete="off"
               placeholder="Name/contact"
+              value="none"
+              class="hidden"
               required
             />
-           
             <img
               src="images/question-mark.png"
               alt="question-mark"
-              class="question-mark"
+              class="question-mark hidden"
             />
           </div>
         </div>
@@ -352,13 +357,13 @@
           min="100000"
           required
         />
-        <img src="images/log-in-bind.png" alt="loginbind" class="log-in-bind">
+        <img src="images/log-in-bind.png" alt="loginbind" class="log-in-bind" />
 
         <button type="submit">LOG IN</button>
       </form>
       <div class="glitch-wrapper">
-          <div class="glitch" data-glitch="copyright">copyright</div>
-        <i class='bx bx-copyright'></i>
+        <div class="glitch" data-glitch="copyright">copyright</div>
+        <i class="bx bx-copyright"></i>
         <p class="current-year"></p>
       </div>
     </footer>
@@ -366,7 +371,5 @@
     <script src="js/particles.js"></script>
     <script src="js/usernames.js"></script>
     <script src="js/index.js"></script>
-    
-
   </body>
 </html>

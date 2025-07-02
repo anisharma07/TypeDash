@@ -150,37 +150,37 @@ input[type="text"] {
 .details {
   position: relative;
 }
-.rules-modal{
+.rules-modal {
   font-family: "Roboto Mono", monospace;
   background: rgba(0, 0, 0, 0.65);
-    border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(13.4px);
-    -webkit-backdrop-filter: blur(13.4px);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    width: 375px;
-    font-size: 21px;
-    text-align: start;
-    padding: 11px;
-    padding-left: 29px;
-    position: absolute;
-    top: -17px;
-    left: 463px;
-    z-index: 1000;
-    letter-spacing: 1px;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(13.4px);
+  -webkit-backdrop-filter: blur(13.4px);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  width: 375px;
+  font-size: 21px;
+  text-align: start;
+  padding: 11px;
+  padding-left: 29px;
+  position: absolute;
+  top: -17px;
+  left: 463px;
+  z-index: 1000;
+  letter-spacing: 1px;
 }
-.rules-modal h2{
+.rules-modal h2 {
   font-family: "Bangers", system-ui;
   size: 20px;
 }
-.rules-modal-bind{
+.rules-modal-bind {
   position: absolute;
   top: 53px;
   right: -62px;
   width: 32px;
   z-index: 41;
 }
-.log-in-bind{
+.log-in-bind {
   position: absolute;
   top: -40px;
   left: -3px;
@@ -200,7 +200,7 @@ input[type="radio"]:checked + img {
   justify-content: space-evenly;
   align-items: center;
   font-family: "Bangers", system-ui;
-  height: 200px;
+  height: 150px;
   margin: 0 auto 0;
   text-align: center;
   border-bottom-right-radius: 103px;
@@ -238,9 +238,9 @@ input[type="radio"]:checked + img {
 
 .focus-tab {
   position: absolute;
-  top: 75px;
-  left: 65px;
-  width: 87px;
+  top: 20px;
+  left: 20px;
+  width: 75px;
 }
 .question-mark {
   position: absolute;
@@ -343,11 +343,11 @@ input[type="radio"]:checked + img {
   }
 }
 
-@media (width<=500px) {
+@media (width<=600px) {
   .typing-on-phone {
     display: block;
   }
-  .rules-modal{
+  .rules-modal {
     font-family: "Roboto Mono", monospace;
     background: rgba(0, 0, 0, 0.9);
     border-radius: 16px;
@@ -366,10 +366,10 @@ input[type="radio"]:checked + img {
     z-index: 1000;
     letter-spacing: 1px;
   }
-  .rules-modal-bind{
+  .rules-modal-bind {
     display: none;
   }
-  .log-in-bind{
+  .log-in-bind {
     display: none;
   }
   .avatar-div {
@@ -399,7 +399,7 @@ input[type="radio"]:checked + img {
     justify-content: space-evenly;
     align-items: center;
     font-family: "Bangers", system-ui;
-    height: 200px;
+    height: 120px;
     margin: 0 auto 0;
     text-align: center;
     border-bottom-right-radius: 11px;

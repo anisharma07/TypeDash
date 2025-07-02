@@ -34,6 +34,7 @@ const difficulty = document.getElementById("DifficultySelect");
 const logOut = document.querySelector(".leave-game");
 const MediumButton = document.querySelector(".medium");
 const EasyButton = document.querySelector(".easy");
+const timeWarn = document.querySelector(".time-up-warn").classList;
 let currentWord = document.querySelector(".word.current");
 let currentLetter = document.querySelector(".letter.current");
 // 2. variables
@@ -111,7 +112,7 @@ inpField.addEventListener("paste", function (event) {
 document.addEventListener("keydown", () => inpField.focus());
 typingText.addEventListener("click", () => inpField.focus());
 
-function keyBindsFunction(e){
+function keyBindsFunction(e) {
   if (e.key === "Escape") {
     e.preventDefault();
     leaveGame();
@@ -120,48 +121,67 @@ function keyBindsFunction(e){
     e.preventDefault();
     onReadyBtnClick();
   }
-  if (e.key === "`"){
+  if (e.key === "`") {
     e.preventDefault();
     toggleLeaderboardFunction();
   }
-  if(e.key === "Tab"){
+  if (e.key === "Tab") {
     e.preventDefault();
-    if(EasyButton.classList.contains("leaderboard-level-chosen")){
+    if (EasyButton.classList.contains("leaderboard-level-chosen")) {
       EasyButton.classList.remove("leaderboard-level-chosen");
-    MediumButton.classList.add("leaderboard-level-chosen");
-   
-    easyDivToPopulate.classList.add("hidden");
-    MediumDivToPopulate.classList.remove("hidden");
-    }else{
+      MediumButton.classList.add("leaderboard-level-chosen");
+
+      easyDivToPopulate.classList.add("hidden");
+      MediumDivToPopulate.classList.remove("hidden");
+    } else {
       EasyButton.classList.add("leaderboard-level-chosen");
       MediumButton.classList.remove("leaderboard-level-chosen");
       MediumDivToPopulate.classList.add("hidden");
       easyDivToPopulate.classList.remove("hidden");
     }
- 
   }
-  if (e.ctrlKey && e.key === "Control"){
+  if (e.ctrlKey && e.key === "Control") {
     e.preventDefault();
     populateLeaderboard(joiningId);
   }
-  if (e.altKey && e.key === "Alt"){
+  if (e.altKey && e.key === "Alt") {
     e.preventDefault();
-    var select = document.getElementById('DifficultySelect');
-      let option1 = select.options[0];
-      let option2 = select.options[1];
+    var select = document.getElementById("DifficultySelect");
+    let option1 = select.options[0];
+    let option2 = select.options[1];
 
-      // Toggle the selected attribute of the options
-      if (option1.selected) {
-        option1.selected = false;
-        option2.selected = true;
-      } else {
-        option1.selected = true;
-        option2.selected = false;
-      }
+    // Toggle the selected attribute of the options
+    if (option1.selected) {
+      option1.selected = false;
+      option2.selected = true;
+    } else {
+      option1.selected = true;
+      option2.selected = false;
+    }
   }
 }
 function preventDefaultKeys(e) {
-  const forbiddenKeys = ['Alt', 'Control', 'Fn', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'PrintScreen', 'Insert', 'Delete', 'Tab'];
+  const forbiddenKeys = [
+    "Alt",
+    "Control",
+    "Fn",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+    "PrintScreen",
+    "Insert",
+    "Delete",
+    "Tab",
+  ];
 
   if (forbiddenKeys.includes(e.key)) {
     e.preventDefault();
@@ -174,10 +194,10 @@ function toggleEventListener() {
   if (keyBindingListener) {
     console.log("keyBinds Applied");
     document.removeEventListener("keydown", preventDefaultKeys);
-    document.addEventListener('keydown', keyBindsFunction);
+    document.addEventListener("keydown", keyBindsFunction);
   } else {
     console.log("prevent default Applied");
-    document.removeEventListener('keydown', keyBindsFunction);
+    document.removeEventListener("keydown", keyBindsFunction);
     document.addEventListener("keydown", preventDefaultKeys);
   }
 }
@@ -240,10 +260,13 @@ function showSummary() {
 }
 
 function endGame() {
+  socket.emit("set leave match true");
+  document.querySelector(".leave-match").classList.add("hidden");
+  document.querySelector(".dummy-cursor").classList.add("hidden");
   keyBindingListener = 1;
   toggleEventListener();
-  toggleLeaderboardFunction();
-  clearInterval(timer);
+  toggleLeaderboardFunction(); // twice cause problem
+  clearInterval(timer); // twice cleared
   inpField.removeEventListener("input", initTyping);
   inpField.disabled = true;
   typingText.style.marginTop = "";
@@ -260,11 +283,23 @@ function endGame() {
     }
   });
   socket.emit("user score", { wpm, quoteLevel, userDevice });
-  // console.log("exe");
   socket.emit("get rank");
+  const lettersMissed = [
+    ...document.querySelectorAll(
+      ".word .letter:not(.correctText):not(.incorrectText)"
+    ),
+  ];
+  lettersMissed.forEach((letter) => {
+    addClass(letter, "incorrectText");
+  });
+  if (timeInc === 0) {
+    document.querySelector(".time-up-warn").classList.remove("hidden");
+  }
 }
 
 function newGame() {
+  timeWarn.contains("hidden") ? "" : timeWarn.add("hidden");
+  document.querySelector(".leave-match").classList.remove("hidden");
   keyBindingListener = null;
   toggleEventListener();
   progress = 0;
@@ -305,11 +340,13 @@ function spacePressed() {
   inpField.value = "";
   i = 0;
   const currentWordLetters = [
-    ...document.querySelectorAll(
-      ".word.current .letter"
-    ),
+    ...document.querySelectorAll(".word.current .letter"),
   ];
-  if(currentWordLetters.every((letter)=> letter.classList.contains("correctText"))){
+  if (
+    currentWordLetters.every((letter) =>
+      letter.classList.contains("correctText")
+    )
+  ) {
     if (!isFirstLetter) {
       let expectedEl = currentLetter?.innerHTML ?? " ";
       if (expectedEl !== " ") {
@@ -344,7 +381,6 @@ function spacePressed() {
 }
 
 function backspacePressed() {
-  
   currentWord = document.querySelector(".word.current");
   currentLetter = document.querySelector(".letter.current");
   inpField.value = "";

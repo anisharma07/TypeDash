@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, user-scalable=yes" />
-    <title>.Type Dash | Speed typing game</title>
+    <title>Type Dash | Speed typing game</title>
     <!-- box icons -->
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
@@ -27,8 +27,11 @@
     </style>
   </head>
   <body>
-    <div class="wrong-id hidden"><h1>WRONG JOIN ID....</h1>
-    <h1>press esc --> then Enter and try again</h1></div>
+    <div class="leave-match-pop-up"></div>
+    <div class="wrong-id hidden">
+      <h1>WRONG JOIN ID....</h1>
+      <h1>press esc --> then Enter and try again</h1>
+    </div>
     <div class="background-blend"></div>
     <div class="background">
       <div></div>
@@ -39,7 +42,11 @@
       alt="right-planet"
       class="right-planet"
     />
-    <img src="./images/left-planet.png" alt="left-planet" class="left-planet keyss" />
+    <img
+      src="./images/left-planet.png"
+      alt="left-planet"
+      class="left-planet keyss"
+    />
 
     <nav class="navbar">
       <div class="userProfile">
@@ -48,7 +55,11 @@
         <p></p>
       </div>
       <img src="images/leave-game.png" alt="leave-game" class="leave-game" />
-      <img src="images/exit-esc-in-bind.png" alt="exit" class="leave-game-bind keyss">
+      <img
+        src="images/exit-esc-in-bind.png"
+        alt="exit"
+        class="leave-game-bind keyss"
+      />
       <img src="./images/typing.png" alt="type-dash" class="type-dash keyss" />
     </nav>
 
@@ -66,10 +77,18 @@
               alt="filter"
               class="filter-logo"
             />
-            <img src="images/ctrl.png" alt="refresh" class="refresh-bind keyss">
+            <img
+              src="images/ctrl.png"
+              alt="refresh"
+              class="refresh-bind keyss"
+            />
           </div>
           <div class="level-change">
-            <img src="images/tab.png" alt="tab-bind" class="level-change-bind keyss">
+            <img
+              src="images/tab.png"
+              alt="tab-bind"
+              class="level-change-bind keyss"
+            />
             <div class="easy leaderboard-level-chosen"><p>Easy</p></div>
             <div class="medium"><p>Medium</p></div>
           </div>
@@ -187,10 +206,7 @@
             <p>starting in <span class="countdown-number">10</span>s...</p>
           </div>
           <div class="countdown-over hidden">
-            <p>
-              start typing...
-              
-            </p>
+            <p>start typing...</p>
           </div>
           <div class="showWpm details hidden">
             <h3>Score: <strong id="wordsPerMinute">0</strong> wpm</h3>
@@ -205,7 +221,11 @@
           </div> -->
           <div class="dropdown">
             <h3>Level:</h3>
-            <img src="images/alt.png" alt="difficulty-change" class="difficulty-change-bind keyss">
+            <img
+              src="images/alt.png"
+              alt="difficulty-change"
+              class="difficulty-change-bind keyss"
+            />
             <select name="cars" id="DifficultySelect">
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
@@ -214,6 +234,9 @@
         </div>
 
         <div class="container">
+          <div class="time-up-warn hidden">
+            <p>Time Up!</p>
+          </div>
           <div class="timerClass">
             <h3><strong class="stopwatch">00:00</strong></h3>
           </div>
@@ -223,7 +246,9 @@
           <div id="cursor" class="hidden"></div>
           <div class="text-content-div">
             <div class="dummy-cursor hidden"></div>
-            <p id="text-content">Press Enter or Click on Get Ready button to start....</p>
+            <p id="text-content">
+              Press Enter or Click on Get Ready button to start....
+            </p>
           </div>
           <input
             type="text"
@@ -239,18 +264,24 @@
     <!-- footer -->
     <footer class="foo">
       <div class="leaderboard-button">
-        <img src="images/log-in-bind.png" alt="leaderboard" class="leaderboard-bind keyss">
+        <img
+          src="images/log-in-bind.png"
+          alt="leaderboard"
+          class="leaderboard-bind keyss"
+        />
         <img src="images/leaderboardIcon.png" alt="" class="leaderboard-logo" />
       </div>
-
+      <button class="leave-match hidden" onclick="leaveMatchRequest()">
+        Leave match
+      </button>
       <div class="player-status">
-        <img src="images/enter.png" alt="enter" class="ready-btn-bind keyss">
+        <img src="images/enter.png" alt="enter" class="ready-btn-bind keyss" />
         <button class="ready-btn" onclick="onReadyBtnClick()">Get Ready</button>
         <div class="insuff-player hidden">invite 1 more player</div>
       </div>
       <div class="glitch-wrapper">
         <div class="glitch" data-glitch="copyright">copyright</div>
-        <i class='bx bx-copyright'></i>
+        <i class="bx bx-copyright"></i>
         <p class="current-year"></p>
       </div>
     </footer>

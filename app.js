@@ -46,11 +46,11 @@ io.on("connection", (socket) => {
     io.emit("display board", users);
     console.log("user-joined, " + users.length + " users on server");
   });
-  socket.on("join by Id", joinId=>{
+  socket.on("join by Id", (joinId) => {
     async function joinUser() {
       const data = await Racer.find({ joinId: joinId });
       console.log(data[0]);
-      if(data[0]){
+      if (data[0]) {
         console.log("yes");
         console.log(joinId);
         userJoin(socket.id, data[0].username, 0, data[0].userAvatar, joinId);
@@ -58,12 +58,12 @@ io.on("connection", (socket) => {
         io.emit("add user progress", users);
         io.emit("display board", users);
         console.log("user-joined, " + users.length + " users on server");
-      }else{
+      } else {
         socket.emit("wrong join id error");
       }
     }
     joinUser();
-  })
+  });
 
   socket.on("ready status", function (userLevel) {
     const i = getUserIndex(socket.id);
@@ -86,6 +86,9 @@ io.on("connection", (socket) => {
       for (let i = 0; i < users.length; i++) {
         users[i].progress = 0;
       }
+      users.forEach((user) => {
+        user.leaveMatch = 0;
+      });
       io.emit("start game", { quoteFromServer, levelOfQuote });
     } else if (users.length === 1) {
       socket.emit("insufficient players");
@@ -97,7 +100,17 @@ io.on("connection", (socket) => {
     io.emit("sendStatusNotReady", socket.id);
     users[i].status = false;
   });
-
+  socket.on("set leave match true", function () {
+    const i = getUserIndex(socket.id);
+    users[i].leaveMatch = 1;
+  });
+  socket.on("leave match", function () {
+    const i = getUserIndex(socket.id);
+    users[i].leaveMatch = 1;
+    if (users.every((user) => user.leaveMatch === 1)) {
+      io.emit("end game on request");
+    }
+  });
   socket.on("progress", (value, wpm) => {
     const index = getUserIndex(socket.id);
     users[index].progress = Number(value);
@@ -107,25 +120,31 @@ io.on("connection", (socket) => {
   socket.on("user score", (object) => {
     const i = getUserIndex(socket.id);
     const joinuserid = users[i].userJoinId;
-    if ((object.userDevice === "mobile")) {
+    if (object.userDevice === "mobile") {
       if (object.quoteLevel === 1) {
         async function ScoreMediumMobile() {
           await Racer.updateOne(
-            { "joinId" : Number(joinuserid), "highScore.Medium.Mobile": { $lt: object.wpm } },
+            {
+              joinId: Number(joinuserid),
+              "highScore.Medium.Mobile": { $lt: object.wpm },
+            },
             { $set: { "highScore.Medium.Mobile": object.wpm } }
           );
-     
-    io.emit("update user leaderboard");
+
+          io.emit("update user leaderboard");
         }
         ScoreMediumMobile();
       } else {
         async function ScoreEasyMobile() {
           await Racer.updateOne(
-            { "joinId" : Number(joinuserid), "highScore.Easy.Mobile": { $lt: object.wpm } },
+            {
+              joinId: Number(joinuserid),
+              "highScore.Easy.Mobile": { $lt: object.wpm },
+            },
             { $set: { "highScore.Easy.Mobile": object.wpm } }
           );
-          
-    io.emit("update user leaderboard");
+
+          io.emit("update user leaderboard");
         }
         ScoreEasyMobile();
       }
@@ -133,31 +152,37 @@ io.on("connection", (socket) => {
       if (object.quoteLevel === 1) {
         async function ScoreMediumLaptop() {
           await Racer.updateOne(
-            { "joinId" : Number(joinuserid), "highScore.Medium.Laptop": { $lt: object.wpm } },
+            {
+              joinId: Number(joinuserid),
+              "highScore.Medium.Laptop": { $lt: object.wpm },
+            },
             { $set: { "highScore.Medium.Laptop": object.wpm } }
           );
           io.emit("update user leaderboard");
         }
         ScoreMediumLaptop();
       } else {
-    async function ScoreEasyLaptop() {
-      await Racer.updateMany(
-        {"joinId" : Number(joinuserid), "highScore.Easy.Laptop": { $lt: object.wpm }},
-        { $set: { "highScore.Easy.Laptop": object.wpm } }
-      );
-    io.emit("update user leaderboard");
-    }
-    ScoreEasyLaptop();
+        async function ScoreEasyLaptop() {
+          await Racer.updateMany(
+            {
+              joinId: Number(joinuserid),
+              "highScore.Easy.Laptop": { $lt: object.wpm },
+            },
+            { $set: { "highScore.Easy.Laptop": object.wpm } }
+          );
+          io.emit("update user leaderboard");
+        }
+        ScoreEasyLaptop();
       }
     }
   });
-  socket.on("get rank", () =>{
+  socket.on("get rank", () => {
     const findRank = users;
-    const sorted = findRank.sort((a,b)=>b.currWpm-a.currWpm);
-   const rank = sorted.findIndex(player=> player.id ==socket.id) + 1;
-   const playerId = socket.id;
-    io.emit("set player rank", {playerId, rank});
-   })
+    const sorted = findRank.sort((a, b) => b.currWpm - a.currWpm);
+    const rank = sorted.findIndex((player) => player.id == socket.id) + 1;
+    const playerId = socket.id;
+    io.emit("set player rank", { playerId, rank });
+  });
   socket.on("disconnect", () => {
     const user = userLeave(socket.id);
     const usersArr = getRoomUsers();
@@ -170,6 +195,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log("server running at http://localhost:3000");
+  console.log(`server running at http://localhost:${PORT}`);
 });
-// mongodb+srv://anis42390:DXgVnsXzIq11QyJb@cluster0.9lgdys4.mongodb.net/typeUserDB

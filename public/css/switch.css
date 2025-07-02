@@ -85,7 +85,7 @@
   width: 0;
   height: 0;
 }
-@media (width<=500px) {
+@media (width<=600px) {
   .ui-switch {
     top: -12px;
     right: -22px;

@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    ports:
+      - "2360:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/type-dash
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "2701:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
+    driver: local

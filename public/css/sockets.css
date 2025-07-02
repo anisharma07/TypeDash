@@ -15,8 +15,17 @@
   left: 32%;
   z-index: 1;
 }
+.leave-match {
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  z-index: 1;
+}
+.leave-match:hover {
+  cursor: pointer;
+}
 
-.ready-btn-bind{
+.ready-btn-bind {
   position: absolute;
   top: 0px;
   left: -46px;
@@ -203,25 +212,26 @@
   border-top-left-radius: 7px;
   border-bottom-left-radius: 7px;
 }
-.user-rank-wpm{
+.user-rank-wpm {
   position: absolute;
   top: -21px;
   right: -92px;
-    font-family: "Roboto Mono", monospace;
-    color: white;
-    font-size: 16px;
-    font-weight: 500;
+  font-family: "Roboto Mono", monospace;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
 }
-@media (width<=500px) {
-  .dropdown{
+@media (width<=600px) {
+  .dropdown {
     flex-direction: column;
   }
 
-  .countdown, .countdown-over{
+  .countdown,
+  .countdown-over {
     font-size: 18px;
   }
-  .keyss{
-display:none
+  .keyss {
+    display: none;
   }
   .leader-board-menu {
     width: 98%;

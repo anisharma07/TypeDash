@@ -55,7 +55,7 @@ body {
   height: 100%;
   z-index: -9;
 }
-.wrong-id{
+.wrong-id {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -68,7 +68,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
 }
 .timer {
   position: relative;
@@ -87,11 +86,11 @@ body {
   align-items: center;
   margin-bottom: 30px;
 }
-.userProfile{
+.userProfile {
   position: absolute;
-    top: 5px;
-    left: 34px;
-    font-size: 21px;
+  top: 5px;
+  left: 34px;
+  font-size: 21px;
 }
 .leave-game {
   position: absolute;
@@ -102,7 +101,7 @@ body {
 .leave-game:hover {
   cursor: pointer;
 }
-.leave-game-bind{
+.leave-game-bind {
   position: absolute;
   top: 25px;
   right: 68px;
@@ -196,7 +195,7 @@ li.owner-name {
   flex-direction: row;
   font-family: "Roboto Mono", monospace;
 }
-.level-change-bind{
+.level-change-bind {
   transform: rotate(-90deg);
   position: absolute;
   top: 6px;
@@ -221,12 +220,12 @@ li.owner-name {
   align-items: center;
   justify-content: center;
 }
-.leaderboard-level-chosen{
+.leaderboard-level-chosen {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
-.leaderboard-bind{
+.leaderboard-bind {
   position: absolute;
   top: -1px;
   left: 3px;
@@ -245,10 +244,10 @@ li.owner-name {
   justify-content: space-evenly;
   align-items: center;
 }
-.me-rank-card{
+.me-rank-card {
   background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 .player-rankings-easy {
   height: calc(100% - 100px);
@@ -382,7 +381,7 @@ li.owner-name {
   top: 24px;
   right: 8px;
 }
-.match-level{
+.match-level {
   position: absolute;
   top: 2px;
   right: 8px;
@@ -390,7 +389,7 @@ li.owner-name {
 .filter-logo {
   width: 40px;
 }
-.refresh-bind{
+.refresh-bind {
   position: absolute;
   width: 32px;
   top: 4px;
@@ -560,7 +559,7 @@ span {
   left: 23px;
   background: var(--primaryColor);
 }
-.dummy-cursor{
+.dummy-cursor {
   width: 2px;
   height: 27px;
   position: absolute;
@@ -569,7 +568,7 @@ span {
   background: var(--primaryColor);
   animation: blink 1.2s infinite;
 }
-.cursor-type-correct{
+.cursor-type-correct {
   position: absolute;
   top: 0px;
   left: 8px;
@@ -659,6 +658,21 @@ span {
   font-size: 21px;
   user-select: none;
 }
+.time-up-warn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgb(255 0 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 900;
+  padding: 8px 10px;
+  color: var(--primaryColor);
+  border-radius: 8px;
+  z-index: 1;
+}
 .details {
   background-color: rgba(102, 102, 102, 0.353);
   margin: 2px 0;
@@ -677,7 +691,7 @@ span {
 .dropdown h3 {
   font-size: 21px;
 }
-.difficulty-change-bind{
+.difficulty-change-bind {
   position: absolute;
   top: -3px;
   right: -40px;

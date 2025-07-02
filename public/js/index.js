@@ -160,8 +160,7 @@ usernameField.addEventListener("input", function () {
 
 document.querySelector(".question-mark").addEventListener("click", toggleInfo);
 randomDice.addEventListener("click", getRandomName);
-function toggleInfo(){
-  
+function toggleInfo() {
   document.querySelector(".rules-modal").classList.toggle("hidden");
 }
 const currYear = new Date().getFullYear();

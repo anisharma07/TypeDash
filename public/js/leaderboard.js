@@ -1,7 +1,6 @@
 const easyDivToPopulate = document.querySelector(".player-rankings-easy");
 const MediumDivToPopulate = document.querySelector(".player-rankings-medium");
 
-
 let MobileEasy = [];
 let MobileMedium = [];
 let LaptopEasy = [];
@@ -70,7 +69,9 @@ const populateLeaderboard = function (joiningID) {
 
       easyDivToPopulate.innerHTML = "";
       EasyRehtaHai.forEach((player) => {
-        const html = ` <div class="rank-card ${player.joinId == joiningID ? "me-rank-card": ""}">
+        const html = ` <div class="rank-card ${
+          player.joinId == joiningID ? "me-rank-card" : ""
+        }">
                               <img
         src="images/avatars/${player.userAvatar}.png"
         alt="user-avatar"
@@ -87,7 +88,9 @@ const populateLeaderboard = function (joiningID) {
 
       MediumDivToPopulate.innerHTML = "";
       MediumRehtaHai.forEach((player) => {
-        const html = ` <div class="rank-card ${player.joinId == joiningID? "me-rank-card": ""}">
+        const html = ` <div class="rank-card ${
+          player.joinId == joiningID ? "me-rank-card" : ""
+        }">
         <img
 src="images/avatars/${player.userAvatar}.png"
 alt="user-avatar"

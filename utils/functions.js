@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const LeaderboardSchema = new mongoose.Schema({
-  // userId: Number,
   username: String,
   joinId: Number,
   userAvatar: String,

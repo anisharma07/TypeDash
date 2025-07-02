@@ -1,17 +1,24 @@
 {
-  "name": "multiplayer-speed-type",
+  "name": "type-dash",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A multiplayer typing test game",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon app.js"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Teamexe/Type-Dash.git"
+  },
+  "author": "Anirudh Sharma",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Teamexe/Type-Dash/issues"
+  },
+  "homepage": "https://github.com/Teamexe/Type-Dash#readme",
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "socket.io": "^4.7.2",
     "mongodb": "^6.0.0",
     "mongoose": "^7.5.0",

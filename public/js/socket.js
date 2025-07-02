@@ -1,26 +1,29 @@
-
-socket.on("joining id", userJoinId=>{
+socket.on("joining id", (userJoinId) => {
   joiningId = userJoinId;
   document.querySelector(".current-user-username").innerHTML = username;
-  document.querySelector(".curr-user-id").innerHTML=userJoinId;
+  document.querySelector(".curr-user-id").innerHTML = userJoinId;
   populateLeaderboard(joiningId);
 });
-socket.on("joining by id", (IdJoin, usernamebyid)=>{
-joiningId = IdJoin;
-document.querySelector(".current-user-username").innerHTML = usernamebyid;
-  document.querySelector(".curr-user-id").innerHTML=IdJoin;
+socket.on("joining by id", (IdJoin, usernamebyid) => {
+  joiningId = IdJoin;
+  document.querySelector(".current-user-username").innerHTML = usernamebyid;
+  document.querySelector(".curr-user-id").innerHTML = IdJoin;
   populateLeaderboard(IdJoin);
 });
-document.querySelector(".filter-logo").addEventListener('click', function(){
+document.querySelector(".filter-logo").addEventListener("click", function () {
   populateLeaderboard(joiningId);
 });
-if(joinId){
-socket.emit("join by Id", joinId);
-}else{
+if (joinId) {
+  socket.emit("join by Id", joinId);
+} else {
   socket.emit("join", { username, userAvatar, userIdentity });
- 
 }
-
+function leaveMatchRequest() {
+  socket.emit("leave match");
+}
+socket.on("end game on request", function () {
+  endGame();
+});
 function sendProgress() {
   minutes = String(Math.trunc(timeInc / 60));
   secs = String(timeInc % 60);
@@ -43,21 +46,21 @@ function refreshProgressContainer(usersArr) {
   progressContainer.innerHTML = "";
   usersArr.forEach((user) => {
     let progressHtml = `<div id="${user.id}progress-bar" class="progress-bar">
-    <div class="status-circle" id ="${user.id}status"></div>
-    <div id="${user.id}user-rank" class="user-rank-wpm"></div>
-    <div class = "user-curr-wpm" id ="${user.id}wpm">
-    0 wpm</div>
-    <div id="${user.id}nameid"  class="player-name ${
+      <div class="status-circle" id ="${user.id}status"></div>
+      <div id="${user.id}user-rank" class="user-rank-wpm"></div>
+      <div class = "user-curr-wpm" id ="${user.id}wpm">
+      0 wpm</div>
+      <div id="${user.id}nameid"  class="player-name ${
       socket.id === user.id ? "player-you" : ""
     }">
-    <p> ${socket.id === user.id ? "YOU" : user.username}</p> 
-    </div>
-    <img src="images/avatars/${user.avatar}.png" alt="avatar" id="${
+      <p> ${socket.id === user.id ? "YOU" : user.username}</p> 
+      </div>
+      <img src="images/avatars/${user.avatar}.png" alt="avatar" id="${
       user.id
     }avatar" class="user-avatar">
-    <img src="./images/dividerFigma@4x.png" alt="divider" class = "progress-path">
-    </div>`;
-   
+      <img src="./images/dividerFigma@4x.png" alt="divider" class = "progress-path">
+      </div>`;
+
     if (socket.id === user.id) {
       progressContainer.innerHTML = progressHtml + progressContainer.innerHTML;
     } else {
@@ -65,22 +68,22 @@ function refreshProgressContainer(usersArr) {
     }
   });
 }
-socket.on("set player rank", object=>{
+socket.on("set player rank", (object) => {
   // console.log(object.playerId, object.rank);
-const selected_element = document.getElementById(`${object.playerId}user-rank`);
-let html;
-if(object.rank == 1){
-  html = `1<sup>st</sup>`
-}else if(object.rank == 2){
-  html = `2<sup>nd</sup>`
-  
-}else if(object.rank == 3){
-  html = `3<sup>rd</sup>`
-
-}else{
-  html = `${object.rank}<sup>th</sup>`
-}
-selected_element.innerHTML = html;
+  const selected_element = document.getElementById(
+    `${object.playerId}user-rank`
+  );
+  let html;
+  if (object.rank == 1) {
+    html = `1<sup>st</sup>`;
+  } else if (object.rank == 2) {
+    html = `2<sup>nd</sup>`;
+  } else if (object.rank == 3) {
+    html = `3<sup>rd</sup>`;
+  } else {
+    html = `${object.rank}<sup>th</sup>`;
+  }
+  selected_element.innerHTML = html;
 });
 
 socket.on("update user leaderboard", () => {
@@ -89,9 +92,9 @@ socket.on("update user leaderboard", () => {
 socket.on("add user progress", (users) => {
   refreshProgressContainer(users);
 });
-socket.on("wrong join id error", ()=>{
+socket.on("wrong join id error", () => {
   document.querySelector(".wrong-id").classList.remove("hidden");
-})
+});
 socket.on("remove user progress", (users) => {
   refreshProgressContainer(users);
 });
@@ -134,7 +137,7 @@ function onReadyBtnClick() {
     LeaderboardModal.classList.add("hidden");
   } else if (readybutton.innerHTML == "Ready") {
     notReady();
-   LeaderboardModal.classList.remove("hidden");
+    LeaderboardModal.classList.remove("hidden");
   }
 }
 function playerReady() {
@@ -224,15 +227,21 @@ function countCounter() {
   if (counterValue === -1) {
     clearInterval(counting);
     counterValue = 9;
-  countering.innerHTML = "10";
-document.querySelector(".dummy-cursor").classList.remove("hidden");
+    countering.innerHTML = "10";
+    document.querySelector(".dummy-cursor").classList.remove("hidden");
   }
 }
 
 socket.on("start game", function (quoteObject) {
-  document.querySelectorAll(".user-rank-wpm").forEach(Element=>Element.innerHTML = "");
-  document.querySelectorAll(".user-curr-wpm").forEach(Element=>Element.innerHTML = "0 wpm");
-  document.querySelectorAll(".user-avatar").forEach(Element=>Element.style.left = "0%");
+  document
+    .querySelectorAll(".user-rank-wpm")
+    .forEach((Element) => (Element.innerHTML = ""));
+  document
+    .querySelectorAll(".user-curr-wpm")
+    .forEach((Element) => (Element.innerHTML = "0 wpm"));
+  document
+    .querySelectorAll(".user-avatar")
+    .forEach((Element) => (Element.style.left = "0%"));
   cursor.style.top = "53px";
   cursor.style.left = "23px";
   quoteLevel = quoteObject.levelOfQuote;
