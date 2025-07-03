@@ -84,11 +84,11 @@ Type Dash can be set up in multiple ways depending on your needs. Choose the set
 
 #### Option 1: Docker Setup (Recommended)
 
-Perfect for production and easy deployment with all dependencies included.
+Perfect for production and easy deployment with all dependencies included. View Complete Guide at [DOCKER_INSTRUCTIONS.md](DOCKER_INSTRUCTIONS.md)
 
 ```bash
 # Clone the repository
-git clone https://github.com/Teamexe/Type-Dash.git
+git clone https://github.com/anisharma07/TypeDash
 cd Type-Dash
 
 # Start with Docker (includes MongoDB)
@@ -106,7 +106,7 @@ Best for development and customization. See [DEVSETUP.md](DEVSETUP.md) for detai
 
 ```bash
 # Clone the repository
-git clone https://github.com/Teamexe/Type-Dash.git
+git clone https://github.com/anisharma07/TypeDash
 cd Type-Dash
 
 # Install dependencies
@@ -117,6 +117,10 @@ MONGODB_URI=mongodb://localhost:27017/TypeDash
 
 # Start the application
 npm start
+
+# Access the application
+# Local: http://localhost:2360
+# Network: http://YOUR_IP:2360
 ```
 
 ### Prerequisites
@@ -133,42 +137,6 @@ npm start
 - MongoDB (local or Atlas)
 - Git
 
-### Detailed Setup Instructions
-
-📋 **Manual Development Setup**: [DEVSETUP.md](DEVSETUP.md)
-
-- Complete step-by-step manual installation guide
-- Prerequisites and troubleshooting
-- Database configuration options
-- Development tools and tips
-
-🐳 **Docker Setup**: [DOCKER_INSTRUCTIONS.md](DOCKER_INSTRUCTIONS.md)
-
-- Containerized deployment
-- Production-ready configuration
-- Database options (Local MongoDB or Atlas)
-- Network configuration
-
-### Quick Start
-
-1. **Clone the repository**
-
-   ```sh
-   git clone https://github.com/Teamexe/Type-Dash.git
-   cd Type-Dash
-   ```
-
-2. **Choose your setup method**:
-
-   - **Docker**: `./scripts/start.sh`
-   - **Manual**: Follow [DEVSETUP.md](DEVSETUP.md)
-
-3. **Access the application**:
-   ```sh
-   http://localhost:2360  # Docker
-   http://localhost:3000  # Manual setup
-   ```
-
 ### Environment Configuration
 
 Create a `.env` file in the root directory:
@@ -176,6 +144,9 @@ Create a `.env` file in the root directory:
 ```env
 # For local MongoDB
 MONGODB_URI=mongodb://localhost:27017/TypeDash
+
+# For local development with docker (default)
+MONGODB_URI=mongodb://mongo:27017/TypeDash
 
 # For MongoDB Atlas
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/TypeDash
@@ -187,22 +158,22 @@ PORT=3000
 
 ## Playing Suggestions
 
-### Local Network Hosting
+### 1. Local Network Hosting
 
-- The device where the app is running, connect it to the wi-fi
-- get the ipv4 address of the network from wi-fi settings --> [video](https://github.com/Teamexe/Type-Dash/tree/main/public/videos)
-- now go to `http://your_ipv4_address:3000`
-- share the link with your friends :)
-- NOTE: make sure that all devices share the same wi-fi network .i.e the network on which the server is running.
+- Copy the Network Ip from your computer, also logged when you run the application
+- Share the ip with your devices running the same wifi network.
+- Access the app on http://<your_ip_address>:2360
 
-### ngrok
+### 2. NGROK
 
 - Install [ngrok](https://ngrok.com) and create a temporary link to the port where app is running...
 - share the link with your friends and enjoy typing...
   <img src="/public/images/ng-rok.png" alt="ng-rok">
 
-<br/>
-tip: You can also have mobile typing races.
+### 3. Host on Cloud Service:
+
+- Use Aws or any other cloud service to host the application
+- Use the public Ip or domain from service provider to access the application online.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
