@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Teamexe/Type-Dash.git"
+    "url": "git+https://github.com/anisharma07/TypeDash.git"
   },
   "author": "Anirudh Sharma",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Teamexe/Type-Dash/issues"
+    "url": "https://github.com/anisharma07/TypeDash/issues"
   },
-  "homepage": "https://github.com/Teamexe/Type-Dash#readme",
+  "homepage": "https://github.com/anisharma07/TypeDash#readme",
   "dependencies": {
     "dotenv": "^16.3.1",
     "express": "^4.19.2",
