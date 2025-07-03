@@ -195,5 +195,26 @@ io.on("connection", (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`server running at http://localhost:${PORT}`);
+  const os = require("os");
+  const networkInterfaces = os.networkInterfaces();
+
+  console.log(`\n🚀 TypeDash Server Started Successfully!`);
+  console.log(`📡 Port: ${PORT}`);
+  console.log(`\n🌐 Available on:`);
+  console.log(`   Local:    http://localhost:${PORT}`);
+  console.log(`   Local:    http://127.0.0.1:${PORT}`);
+
+  // Show all network interfaces
+  Object.keys(networkInterfaces).forEach((interfaceName) => {
+    const interfaces = networkInterfaces[interfaceName];
+    interfaces.forEach((networkInterface) => {
+      if (networkInterface.family === "IPv4" && !networkInterface.internal) {
+        console.log(
+          `   Network:  http://${networkInterface.address}:${PORT} (${interfaceName})`
+        );
+      }
+    });
+  });
+
+  console.log(`\n💡 Use Ctrl+C to stop the server\n`);
 });
