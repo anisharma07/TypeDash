@@ -175,6 +175,18 @@ PORT=3000
 - Use Aws or any other cloud service to host the application
 - Use the public Ip or domain from service provider to access the application online.
 
+<br/>
+
+#### For Optimal Visual Experience, I Recommend:
+
+To adjust screen size using
+
+```bash
+CTRL + or CTRL -
+```
+
+or using the zoom icon from the browser window
+
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
