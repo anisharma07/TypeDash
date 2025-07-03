@@ -6,25 +6,6 @@
 # Usage:
 #   ./start.sh         - Auto-detect database configuration and start
 #   ./start.sh --setup - Interactive daecho ""
-echo -e "${GREEN}🎉 Type Dash is ready!${NC}"
-echo "=================================="
-
-# Get network information
-LOCAL_IP=$(hostname -I | awk '{print $1}')
-PUBLIC_IP=$(curl -s ifconfig.me 2>/dev/null || echo "Unable to detect")
-
-echo -e "${BLUE}🌐 Access your application at:${NC}"
-echo -e "${BLUE}   • Local:      http://localhost:2360${NC}"
-echo -e "${BLUE}   • Network IP: http://${LOCAL_IP}:2360${NC}"
-echo -e "${BLUE}   • Public IP:  http://${PUBLIC_IP}:2360${NC}"
-echo -e "${YELLOW}   Note: Public IP requires port forwarding/firewall rules${NC}"
-echo ""
-echo "📋 Useful commands:"
-echo -e "${YELLOW}📊 View logs:        docker-compose logs -f${NC}"
-echo -e "${YELLOW}⚙️  Check status:     ./scripts/status.sh${NC}"
-echo -e "${YELLOW}🛑 Stop application: ./scripts/stop.sh${NC}"
-echo -e "${YELLOW}🔄 Reconfigure DB:   ./scripts/start.sh --setup${NC}"
-echo ""p and start
 #   ./start.sh -s      - Same as --setup
 
 echo "🚀 Starting Type Dash Application..."

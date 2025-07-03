@@ -5,7 +5,7 @@ services:
   app:
     build: .
     ports:
-      - "0.0.0.0:2360:3000"
+      - "0.0.0.0:2360:2360"
     environment:
       # Use environment variable with fallback to local mongo
       - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/TypeDash}
@@ -20,7 +20,7 @@ services:
   app-local:
     build: .
     ports:
-      - "0.0.0.0:2360:3000"
+      - "0.0.0.0:2360:2360"
     environment:
       - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/TypeDash}
     depends_on:
