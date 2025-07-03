@@ -6,7 +6,7 @@ const { join } = require("node:path");
 const app = express();
 const server = createServer(app);
 const { Server } = require("socket.io");
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const { get } = require("http");
 const io = new Server(server);
 

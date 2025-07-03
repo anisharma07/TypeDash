@@ -8,14 +8,14 @@
   <h3 align="center">Type Dash</h3>
 
   <p align="center">
-    A type speed calculation website to conduct  multiplayer typing competitions
+    A 1v1 or group typing challenge game, created for conducting live Typing Race Events in an Exhibition or a Competition
     <br />
     <br />
     <a href="https://youtu.be/lEh0KG50AsI?si=DnHKlQqClXtbN8BN">View Demo</a>
     ·
-    <a href="https://github.com/Teamexe/Type-Dash/issues">Report Bug</a>
+    <a href="https://github.com/anisharma07/TypeDash/issues">Report Bug</a>
     ·
-    <a href="https://github.com/Teamexe/Type-Dash/issues">Request Feature</a>
+    <a href="https://github.com/anisharma07/TypeDash/issues">Request Feature</a>
     ·
     <a href="https://www.figma.com/design/PLxbmlfXFbZ33MHcqdyLHC/Type-Dash?node-id=0-1&t=BZFaK7r2I1Tiyvcj-1">UI Link</a>
   </p>
@@ -25,72 +25,173 @@
 
 ## About The Project
 
+Type Dash is a dynamic real-time multiplayer typing competition platform designed for conducting live typing race events in exhibitions, competitions, and casual gaming. Whether you're organizing a 1v1 duel or a group tournament, Type Dash provides an engaging space-themed environment where players can compete, improve their typing skills, and climb the leaderboard.
+
 <img src="/public/images/github.png" alt="Logo">
 
-This is a dynamic speed typing website that allows users to create and participate in multiplayer typing matches. Users can challenge their friends in real-time typing competitions. The website provides a user-friendly interface where players can test their typing speed, accuracy, and improve their skills. Checkout the live link [here](https://speed-type-wnz9.onrender.com) (Note: It might take few minutes to load due to server inactivity).
+### Use Cases
+
+**1v1 or 1vn Competition**: Players compete in real-time group typing competitions with instant results and rewards for winning players. Perfect for live events and competitions.
+
+**All Players Competition**: Players compete in group competitions by registering with their unique Player ID. Type Dash stores the highest score for each registered user, allowing rewards to be distributed based on leaderboard rankings at the end of typing events.
+
+### Key Features
+
+🚀 **Real-Time Typing Challenges** - Compete with friends, family, or groups in live typing races
+
+📊 **Leaderboard Rankings** - Stores and displays the highest scores for each player
+
+🎮 **Easy Login System** - Quick player registration using unique Player ID from the home page
+
+👨‍🚀 **Avatar Selection** - Choose from various avatars for better user experience with a space-like theme
+
+⚡ **Live WPM Updates** - Real-time words per minute tracking and avatar movements on the race track
+
+⌨️ **Shortcut Keys** - Complete mouseless experience with keyboard shortcuts
+
+🎯 **Two Difficulty Levels** - Different sentence types to test typing performance on various characters (dots, commas, simple letters)
+
+🚦 **Traffic Light Timer** - Countdown indicator before starting matches to ensure all users are ready
+
+🎲 **Random Avatar Names** - Quick sign-up with a variety of randomly generated avatar names
+
+📈 **Performance Analytics** - Shows WPM and accuracy statistics after completing matches
+
+✨ **Optimized TsParticles** - Beautiful space-themed background with twinkling stars and particle effects
+
+Checkout the live link [here](https://speed-type-wnz9.onrender.com) (Note: It might take few minutes to load due to server inactivity).
 
 ### Built With
 
-<a href="https://www.w3.org/html/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/> </a>
-<a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/> </a>
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/> </a>
-<a href="https://nodejs.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> </a>
-<a href="https://expressjs.com" target="_blank" rel="noreferrer"> <img src="https://res.cloudinary.com/dwwajleyo/image/upload/v1711754381/membersexe%402024/express_yoss5a.png" alt="express" height="40"/> </a>
-<a href="https://www.mongodb.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original-wordmark.svg" alt="mongodb" width="40" height="40"/> </a>
-<a href="https://www.figma.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/figma/figma-icon.svg" alt="figma" width="40" height="40"/> </a>
-<a href="https://www.adobe.com/in/products/illustrator.html" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/adobe_illustrator/adobe_illustrator-icon.svg" alt="illustrator" width="40" height="40"/> </a>
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-0db7ed?style=for-the-badge&logo=docker&logoColor=white)
+![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
+![Adobe Illustrator](https://img.shields.io/badge/Adobe%20Illustrator-FF9A00?style=for-the-badge&logo=adobe%20illustrator&logoColor=white)
 
 <!-- GETTING STARTED -->
 
 ## Getting Started
 
+Type Dash can be set up in multiple ways depending on your needs. Choose the setup method that works best for your environment:
+
+### 🚀 Quick Setup Options
+
+#### Option 1: Docker Setup (Recommended)
+
+Perfect for production and easy deployment with all dependencies included.
+
+```bash
+# Clone the repository
+git clone https://github.com/Teamexe/Type-Dash.git
+cd Type-Dash
+
+# Start with Docker (includes MongoDB)
+chmod +x scripts/start.sh
+./scripts/start.sh
+
+# Access the application
+# Local: http://localhost:2360
+# Network: http://YOUR_IP:2360
+```
+
+#### Option 2: Manual Development Setup
+
+Best for development and customization. See [DEVSETUP.md](DEVSETUP.md) for detailed instructions.
+
+```bash
+# Clone the repository
+git clone https://github.com/Teamexe/Type-Dash.git
+cd Type-Dash
+
+# Install dependencies
+npm install
+
+# Configure environment (.env file)
+MONGODB_URI=mongodb://localhost:27017/TypeDash
+
+# Start the application
+npm start
+```
+
 ### Prerequisites
 
-- npm
+**For Docker Setup:**
 
-  ```sh
-  npm install npm@latest -g
-  ```
+- Docker & Docker Compose
+- Git
 
-- node.js
-  ```sh
-  download node.js from https://nodejs.org
-  ```
-- mongoDb
-  ```sh
-  download and configure mongoDb shell from https://www.mongodb.com/try/download/shell
-  ```
+**For Manual Setup:**
 
-### Installation
+- Node.js (v16 or higher)
+- npm or yarn
+- MongoDB (local or Atlas)
+- Git
 
-1. Clone the repo
+### Detailed Setup Instructions
+
+📋 **Manual Development Setup**: [DEVSETUP.md](DEVSETUP.md)
+
+- Complete step-by-step manual installation guide
+- Prerequisites and troubleshooting
+- Database configuration options
+- Development tools and tips
+
+🐳 **Docker Setup**: [DOCKER_INSTRUCTIONS.md](DOCKER_INSTRUCTIONS.md)
+
+- Containerized deployment
+- Production-ready configuration
+- Database options (Local MongoDB or Atlas)
+- Network configuration
+
+### Quick Start
+
+1. **Clone the repository**
+
    ```sh
    git clone https://github.com/Teamexe/Type-Dash.git
+   cd Type-Dash
    ```
-2. Install packages
+
+2. **Choose your setup method**:
+
+   - **Docker**: `./scripts/start.sh`
+   - **Manual**: Follow [DEVSETUP.md](DEVSETUP.md)
+
+3. **Access the application**:
    ```sh
-   npm install
+   http://localhost:2360  # Docker
+   http://localhost:3000  # Manual setup
    ```
-3. Type your mongoDb URL in .env file:
-   ```sh
-   MONGODB_URI=mongodb://127.0.0.1:27017/TypeDash
-   ```
-4. Run the command:
-   ```sh
-   npm run dev
-   ```
-5. Start a type race at:
-   ```sh
-   http://localhost:3000
-   ```
+
+### Environment Configuration
+
+Create a `.env` file in the root directory:
+
+```env
+# For local MongoDB
+MONGODB_URI=mongodb://localhost:27017/TypeDash
+
+# For MongoDB Atlas
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/TypeDash
+
+# Optional configuration
+NODE_ENV=development
+PORT=3000
+```
 
 ## Playing Suggestions
 
 ### Local Network Hosting
 
-- The device where the app is running, connect it to the wi-fi 
+- The device where the app is running, connect it to the wi-fi
 - get the ipv4 address of the network from wi-fi settings --> [video](https://github.com/Teamexe/Type-Dash/tree/main/public/videos)
-- now go to ```http://your_ipv4_address:3000```
+- now go to `http://your_ipv4_address:3000`
 - share the link with your friends :)
 - NOTE: make sure that all devices share the same wi-fi network .i.e the network on which the server is running.
 
@@ -98,7 +199,7 @@ This is a dynamic speed typing website that allows users to create and participa
 
 - Install [ngrok](https://ngrok.com) and create a temporary link to the port where app is running...
 - share the link with your friends and enjoy typing...
- <img src="/public/images/ng-rok.png" alt="ng-rok">
+  <img src="/public/images/ng-rok.png" alt="ng-rok">
 
 <br/>
 tip: You can also have mobile typing races.

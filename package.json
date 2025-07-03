@@ -18,10 +18,11 @@
   },
   "homepage": "https://github.com/Teamexe/Type-Dash#readme",
   "dependencies": {
+    "dotenv": "^16.3.1",
     "express": "^4.19.2",
-    "socket.io": "^4.7.2",
     "mongodb": "^6.0.0",
     "mongoose": "^7.5.0",
-    "dotenv": "^16.3.1"
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.7.2"
   }
 }
