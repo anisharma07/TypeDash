@@ -2,6 +2,30 @@
 
 # Type Dash - Start Script
 # This script starts the application and verifies all services are running
+# 
+# Usage:
+#   ./start.sh         - Auto-detect database configuration and start
+#   ./start.sh --setup - Interactive daecho ""
+echo -e "${GREEN}🎉 Type Dash is ready!${NC}"
+echo "=================================="
+
+# Get network information
+LOCAL_IP=$(hostname -I | awk '{print $1}')
+PUBLIC_IP=$(curl -s ifconfig.me 2>/dev/null || echo "Unable to detect")
+
+echo -e "${BLUE}🌐 Access your application at:${NC}"
+echo -e "${BLUE}   • Local:      http://localhost:2360${NC}"
+echo -e "${BLUE}   • Network IP: http://${LOCAL_IP}:2360${NC}"
+echo -e "${BLUE}   • Public IP:  http://${PUBLIC_IP}:2360${NC}"
+echo -e "${YELLOW}   Note: Public IP requires port forwarding/firewall rules${NC}"
+echo ""
+echo "📋 Useful commands:"
+echo -e "${YELLOW}📊 View logs:        docker-compose logs -f${NC}"
+echo -e "${YELLOW}⚙️  Check status:     ./scripts/status.sh${NC}"
+echo -e "${YELLOW}🛑 Stop application: ./scripts/stop.sh${NC}"
+echo -e "${YELLOW}🔄 Reconfigure DB:   ./scripts/start.sh --setup${NC}"
+echo ""p and start
+#   ./start.sh -s      - Same as --setup
 
 echo "🚀 Starting Type Dash Application..."
 echo "=================================="
@@ -50,7 +74,7 @@ check_mongodb() {
     echo "🔍 Checking MongoDB connection..."
     
     # Try to connect to MongoDB and run a simple command
-    if docker exec type-dash_mongo_1 mongosh --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+    if docker exec typedash_mongo_1 mongosh --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
         echo -e "${GREEN}✅ MongoDB is running and accessible${NC}"
         return 0
     else
@@ -67,27 +91,135 @@ show_status() {
     
     # Check Docker containers
     echo "🐳 Docker Containers:"
-    docker ps --filter "name=type-dash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+    docker ps --filter "name=typedash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
     
     echo ""
-    echo "🌐 Service URLs:"
-    echo "  • Application: http://localhost:2360"
-    echo "  • MongoDB:     mongodb://localhost:2701"
     
+    # Get network IP addresses
+    LOCAL_IP=$(hostname -I | awk '{print $1}')
+    PUBLIC_IP=$(curl -s ifconfig.me 2>/dev/null || echo "Unable to detect")
+    
+    if [ "$USE_ATLAS" = true ]; then
+        echo "🌐 Service URLs:"
+        echo "  • Local:       http://localhost:2360"
+        echo "  • Network IP:  http://${LOCAL_IP}:2360"
+        echo "  • Public IP:   http://${PUBLIC_IP}:2360 (if port forwarded)"
+        echo "  • Database:    MongoDB Atlas (Cloud)"
+    else
+        echo "🌐 Service URLs:"
+        echo "  • Local:       http://localhost:2360"
+        echo "  • Network IP:  http://${LOCAL_IP}:2360"
+        echo "  • Public IP:   http://${PUBLIC_IP}:2360 (if port forwarded)"
+        echo "  • MongoDB:     mongodb://localhost:2701"
+        echo "  • MongoDB IP:  mongodb://${LOCAL_IP}:2701"
+        
+        echo ""
+        echo "📁 Volume Status:"
+        docker volume ls --filter "name=typedash"
+    fi
+}
+
+# Function to setup database configuration
+setup_database() {
     echo ""
-    echo "📁 Volume Status:"
-    docker volume ls --filter "name=type-dash"
+    echo "�️  Database Configuration Setup"
+    echo "================================="
+    echo ""
+    echo "Choose your database option:"
+    echo "1) Local MongoDB (Docker) - Recommended for development"
+    echo "2) MongoDB Atlas (Cloud) - Recommended for production"
+    echo "3) Auto-detect from existing configuration"
+    echo ""
+    
+    read -p "Enter your choice (1, 2, or 3): " choice
+    
+    case $choice in
+        1)
+            echo ""
+            echo "📍 Selected: Local MongoDB"
+            if [ -f ".env" ]; then
+                echo "⚠️  Removing existing .env file to use default local configuration"
+                rm .env
+            fi
+            USE_ATLAS=false
+            ;;
+        2)
+            echo ""
+            echo "☁️  Selected: MongoDB Atlas"
+            
+            if [ ! -f ".env" ]; then
+                echo "📝 Creating .env file from template..."
+                cp .env.example .env
+            fi
+            
+            echo ""
+            echo "⚠️  IMPORTANT: MongoDB Atlas Setup Required!"
+            echo "   1. Go to https://www.mongodb.com/atlas"
+            echo "   2. Create account and free cluster"
+            echo "   3. Get your connection string"
+            echo "   4. Replace MONGODB_URI in .env file with your Atlas connection string"
+            echo ""
+            echo "📝 Current .env file location: $(pwd)/.env"
+            echo ""
+            read -p "Press Enter when you've updated the .env file with your Atlas connection string..."
+            
+            if [ -f ".env" ] && grep -q "mongodb+srv" .env 2>/dev/null; then
+                echo "✅ Atlas configuration detected in .env file"
+                USE_ATLAS=true
+            else
+                echo "⚠️  Warning: No Atlas configuration detected. Falling back to local MongoDB."
+                USE_ATLAS=false
+            fi
+            ;;
+        3)
+            echo ""
+            echo "� Auto-detecting database configuration..."
+            if [ -f ".env" ] && grep -q "mongodb+srv" .env 2>/dev/null; then
+                echo "✅ Found MongoDB Atlas configuration"
+                USE_ATLAS=true
+            else
+                echo "✅ Using local MongoDB configuration"
+                USE_ATLAS=false
+            fi
+            ;;
+        *)
+            echo "❌ Invalid choice. Using local MongoDB as default."
+            USE_ATLAS=false
+            ;;
+    esac
 }
 
 # Main execution
 echo "🛠️  Building and starting containers..."
 
-# Start Docker Compose
-if docker-compose up --build -d; then
-    echo -e "${GREEN}✅ Docker containers started successfully${NC}"
+# Check if this is first run or if user wants to reconfigure
+if [ "$1" = "--setup" ] || [ "$1" = "-s" ]; then
+    setup_database
+elif [ -f ".env" ] && grep -q "mongodb+srv" .env 2>/dev/null; then
+    echo "🔍 Detected MongoDB Atlas configuration"
+    USE_ATLAS=true
 else
-    echo -e "${RED}❌ Failed to start Docker containers${NC}"
-    exit 1
+    echo "🔍 Using local MongoDB database"
+    USE_ATLAS=false
+fi
+
+# Start containers based on configuration
+if [ "$USE_ATLAS" = true ]; then
+    echo "🚀 Starting with cloud database..."
+    if docker-compose --profile atlas up --build -d; then
+        echo -e "${GREEN}✅ Docker containers started successfully (Atlas mode)${NC}"
+    else
+        echo -e "${RED}❌ Failed to start Docker containers${NC}"
+        exit 1
+    fi
+else
+    echo "🚀 Starting with local database..."
+    if docker-compose --profile local-db up --build -d; then
+        echo -e "${GREEN}✅ Docker containers started successfully (Local mode)${NC}"
+    else
+        echo -e "${RED}❌ Failed to start Docker containers${NC}"
+        exit 1
+    fi
 fi
 
 echo ""
@@ -104,13 +236,18 @@ else
 fi
 
 # Check MongoDB
-if check_mongodb; then
-    echo -e "${GREEN}✅ MongoDB is working properly${NC}"
+if [ "$USE_ATLAS" = true ]; then
+    echo "☁️  Using MongoDB Atlas - skipping local MongoDB check"
+    echo -e "${GREEN}✅ MongoDB Atlas connection assumed working${NC}"
 else
-    echo -e "${RED}❌ MongoDB check failed${NC}"
-    echo "📋 Checking MongoDB logs..."
-    docker-compose logs mongo
-    exit 1
+    if check_mongodb; then
+        echo -e "${GREEN}✅ MongoDB is working properly${NC}"
+    else
+        echo -e "${RED}❌ MongoDB check failed${NC}"
+        echo "📋 Checking MongoDB logs..."
+        docker-compose logs mongo
+        exit 1
+    fi
 fi
 
 # Show final status
@@ -120,6 +257,10 @@ echo ""
 echo -e "${GREEN}🎉 Type Dash is ready!${NC}"
 echo "=================================="
 echo -e "${BLUE}🌐 Open your browser and visit: http://localhost:2360${NC}"
-echo -e "${YELLOW}📊 To view logs: docker-compose logs -f${NC}"
-echo -e "${YELLOW}🛑 To stop: docker-compose down${NC}"
+echo ""
+echo "📋 Useful commands:"
+echo -e "${YELLOW}📊 View logs:        docker-compose logs -f${NC}"
+echo -e "${YELLOW}� Check status:     ./scripts/status.sh${NC}"
+echo -e "${YELLOW}🛑 Stop application: ./scripts/stop.sh${NC}"
+echo -e "${YELLOW}🔄 Reconfigure DB:   ./scripts/start.sh --setup${NC}"
 echo ""

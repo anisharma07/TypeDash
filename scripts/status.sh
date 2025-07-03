@@ -29,8 +29,8 @@ check_service_health() {
 
 # Check Docker containers
 echo "🐳 Docker Containers:"
-if docker ps --filter "name=type-dash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -q "type-dash"; then
-    docker ps --filter "name=type-dash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+if docker ps --filter "name=typedash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -q "typedash"; then
+    docker ps --filter "name=typedash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 else
     echo -e "${RED}❌ No Type Dash containers running${NC}"
 fi
@@ -41,26 +41,48 @@ echo "🌐 Service Health:"
 # Check application
 check_service_health "http://localhost:2360" "Type Dash Application"
 
-# Check MongoDB
-echo -n "🍃 MongoDB: "
-if docker exec type-dash_mongo_1 mongosh --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
-    echo -e "${GREEN}Running${NC}"
+# Check database configuration and status
+echo -n "🗄️  Database: "
+if [ -f ".env" ] && grep -q "mongodb+srv" .env 2>/dev/null; then
+    echo -e "${BLUE}MongoDB Atlas (Cloud)${NC}"
+    echo -n "   Connection: "
+    # For Atlas, we can't directly check but we assume if app is running, DB is working
+    if curl -s "http://localhost:2360" >/dev/null 2>&1; then
+        echo -e "${GREEN}Assumed Working${NC}"
+    else
+        echo -e "${RED}Unknown (App not responding)${NC}"
+    fi
 else
-    echo -e "${RED}Not responding${NC}"
+    echo -e "${BLUE}Local MongoDB${NC}"
+    echo -n "   Status: "
+    if docker exec typedash_mongo_1 mongosh --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+        echo -e "${GREEN}Running${NC}"
+    else
+        echo -e "${RED}Not responding${NC}"
+    fi
 fi
 
 echo ""
 echo "📁 Volumes:"
-docker volume ls --filter "name=type-dash"
+if docker volume ls --filter "name=typedash" | grep -q "typedash"; then
+    docker volume ls --filter "name=typedash"
+else
+    echo "No TypeDash volumes found"
+fi
 
 echo ""
 echo "🌐 Access URLs:"
 echo "  • Application: http://localhost:2360"
-echo "  • MongoDB:     mongodb://localhost:2701"
+if [ -f ".env" ] && grep -q "mongodb+srv" .env 2>/dev/null; then
+    echo "  • Database:    MongoDB Atlas (Cloud)"
+else
+    echo "  • MongoDB:     mongodb://localhost:2701"
+fi
 
 echo ""
 echo "📋 Quick Commands:"
 echo "  • View logs:   docker-compose logs -f"
-echo "  • Restart:     ./stop.sh && ./start.sh"
-echo "  • Stop:        ./stop.sh"
+echo "  • Restart:     ./scripts/stop.sh && ./scripts/start.sh"
+echo "  • Reconfigure: ./scripts/start.sh --setup"
+echo "  • Stop:        ./scripts/stop.sh"
 echo ""

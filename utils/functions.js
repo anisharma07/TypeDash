@@ -3,6 +3,7 @@ const checkIfunique = [];
 require("dotenv").config();
 const mongoURI = process.env.MONGODB_URI;
 const mongoose = require("mongoose");
+console.log("mongoURI", mongoURI);
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const LeaderboardSchema = new mongoose.Schema({

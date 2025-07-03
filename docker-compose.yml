@@ -1,26 +1,47 @@
 version: "3"
 
 services:
+  # Main application service (for cloud/Atlas database)
   app:
     build: .
     ports:
-      - "2360:3000"
+      - "0.0.0.0:2360:3000"
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/type-dash
+      # Use environment variable with fallback to local mongo
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/type-dash}
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    profiles:
+      - atlas
+
+  # Application with local database dependency
+  app-local:
+    build: .
+    ports:
+      - "0.0.0.0:2360:3000"
+    environment:
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/type-dash}
     depends_on:
       - mongo
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
     restart: unless-stopped
+    profiles:
+      - local-db
 
+  # Local MongoDB service
   mongo:
     image: mongo:latest
     ports:
-      - "2701:27017"
+      - "0.0.0.0:2701:27017"
     volumes:
       - mongo-data:/data/db
     restart: unless-stopped
+    profiles:
+      - local-db
 
 volumes:
   mongo-data:
