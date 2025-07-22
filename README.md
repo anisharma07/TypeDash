@@ -15,7 +15,7 @@
     ·
     <a href="https://github.com/anisharma07/TypeDash/issues">Report Bug</a>
     ·
-    <a href="https://github.com/anisharma07/TypeDash/issues">Request Feature</a>
+    <a href="https://typedash-81ar.onrender.com">Live Demo</a>
     ·
     <a href="https://www.figma.com/design/PLxbmlfXFbZ33MHcqdyLHC/Type-Dash?node-id=0-1&t=BZFaK7r2I1Tiyvcj-1">UI Link</a>
   </p>
