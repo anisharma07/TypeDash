@@ -77,6 +77,19 @@ docker-compose logs -f
 docker-compose down
 ```
 
+## How the Image Is Built
+
+The `Dockerfile` is multi-stage: stage 1 (`node:22`) builds the React client
+(`npm ci` + `npm run build` in `client/`); stage 2 (`node:22-alpine`) installs the
+server's production dependencies and copies the server sources plus `client/dist`.
+The Node server serves the built client on port 2360.
+
+`docker-compose.yml` bind-mounts the repo into the container, so it shadows
+`node_modules` and `client/dist` with anonymous volumes to keep what the image built.
+Because of this, **source changes to the client are not picked up by a restart**:
+rebuild with `docker-compose --profile <profile> up --build -V -d` (`-V` renews the
+anonymous volumes so a stale `client/dist` is not reused; `./scripts/start.sh` already does this).
+
 ## Environment Variables
 
 The application uses the following environment variables:
@@ -134,7 +147,8 @@ MongoDB data is persisted in a Docker volume named `mongo-data`. This ensures th
 
 ## Rebuilding the Application
 
-If you make changes to your code, the easiest way is to restart:
+If you make changes to your code (server or React client), the easiest way is to restart,
+which rebuilds the image and renews the anonymous volumes:
 
 ```bash
 ./scripts/stop.sh
@@ -145,7 +159,7 @@ Or rebuild manually:
 
 ```bash
 docker-compose build
-docker-compose --profile local-db up -d  # for local DB
+docker-compose --profile local-db up -V -d  # for local DB
 # OR
-docker-compose --profile atlas up -d     # for Atlas
+docker-compose --profile atlas up -V -d     # for Atlas
 ```

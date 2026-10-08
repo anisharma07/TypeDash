@@ -4,8 +4,13 @@
   "description": "A multiplayer typing test game",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "client:install": "npm --prefix client ci",
+    "client:dev": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build",
+    "build": "npm run client:install && npm run client:build",
+    "test": "npm --prefix client test"
   },
   "repository": {
     "type": "git",

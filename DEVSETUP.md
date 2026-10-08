@@ -8,7 +8,7 @@ Before setting up TypeDash, ensure you have the following installed on your syst
 
 ### Required Software
 
-- **Node.js** (v16 or higher)
+- **Node.js** (v22 or higher; required by the React/Vite client toolchain)
 
   - Download from [nodejs.org](https://nodejs.org/)
   - Verify installation: `node --version` and `npm --version`
@@ -53,11 +53,11 @@ cd /path/to/your/TypeDash/project
 ### Step 2: Install Dependencies
 
 ```bash
-# Install Node.js dependencies
+# Install server dependencies (repo root)
 npm install
 
-# If you prefer yarn
-yarn install
+# Install client dependencies (React + Vite, in client/)
+npm run client:install
 ```
 
 ### Step 3: Database Setup
@@ -147,15 +147,34 @@ Choose one of the following database options:
 
 ### Step 5: Run the Application
 
+**Development (two terminals, hot reload):**
+
 ```bash
+# Terminal 1 - Node server (Socket.IO + API + MongoDB) on port 2360
 npm run dev
+
+# Terminal 2 - Vite dev server on port 5173
+npm run client:dev
 ```
+
+Open `http://localhost:5173`. Vite proxies `/socket.io` and `/get-users-leaderboard`
+to the Node server on port 2360, so the Node server must be running.
+
+**Production-style (single process on port 2360):**
+
+```bash
+npm run build   # npm ci in client/ + build into client/dist
+npm start       # node app.js serves client/dist
+```
+
+Open `http://localhost:2360`. If `client/dist` is missing the server logs a warning
+and answers `GET /` with a 503 telling you to run `npm run build`.
 
 ### Step 6: Verify Setup
 
 1. **Check application**:
 
-   - Open your browser and visit: `http://localhost:3000`
+   - Open your browser and visit: `http://localhost:5173` (dev) or `http://localhost:2360` (production build)
    - You should see the TypeDash homepage
 
 2. **Check database connection**:
@@ -178,14 +197,19 @@ npm start
 # Development mode with auto-restart
 npm run dev
 
-# Run tests (if available)
+# Production server (serves client/dist)
+npm start
+
+# Client dev server (Vite, port 5173)
+npm run client:dev
+
+# Install client deps / build the client
+npm run client:install
+npm run client:build
+npm run build          # both of the above
+
+# Run the client tests (vitest)
 npm test
-
-# Lint code
-npm run lint
-
-# Format code
-npm run format
 ```
 
 ### Useful Development Commands
@@ -294,11 +318,13 @@ TypeDash/
 ├── package.json          # Dependencies and scripts
 ├── .env                  # Environment variables
 ├── .env.example         # Environment template
-├── public/              # Static files (HTML, CSS, JS, images)
-│   ├── index.html
-│   ├── css/
-│   ├── js/
-│   └── images/
+├── client/              # React + TypeScript + Vite frontend
+│   ├── index.html       # Home page entry (src/home/main.tsx)
+│   ├── multiplayer.html # Game page entry (src/game/main.tsx)
+│   ├── src/
+│   ├── public/images/
+│   └── dist/            # Build output served by app.js (git-ignored)
+├── legacy/public/       # Original vanilla frontend (reference only)
 ├── utils/               # Utility functions
 │   ├── functions.js
 │   ├── quotes.js
@@ -314,8 +340,8 @@ TypeDash/
 
 ### Local Development
 
-- **Local**: `http://localhost:3000`
-- **Network**: `http://YOUR_LOCAL_IP:3000`
+- **Local**: `http://localhost:2360` (or `:5173` with the Vite dev server)
+- **Network**: `http://YOUR_LOCAL_IP:2360`
 
 ### Find Your Network IP
 
@@ -332,6 +358,7 @@ ipconfig
 
 - **Node.js Documentation**: [nodejs.org/docs](https://nodejs.org/docs/)
 - **MongoDB Documentation**: [docs.mongodb.com](https://docs.mongodb.com/)
+- **React**: [react.dev](https://react.dev/) and **Vite**: [vite.dev](https://vite.dev/)
 - **Express.js Guide**: [expressjs.com](https://expressjs.com/)
 - **Socket.io Documentation**: [socket.io/docs](https://socket.io/docs/)
 

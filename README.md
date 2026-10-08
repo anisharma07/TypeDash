@@ -27,7 +27,7 @@
 
 Type Dash is a dynamic real-time multiplayer typing competition platform designed for conducting live typing race events in exhibitions, competitions, and casual gaming. Whether you're organizing a 1v1 duel or a group tournament, Type Dash provides an engaging space-themed environment where players can compete, improve their typing skills, and climb the leaderboard.
 
-<img src="/public/images/github.png" alt="Logo">
+<img src="/legacy/public/images/github.png" alt="Logo">
 
 ### Use Cases
 
@@ -63,6 +63,9 @@ Checkout the live link [here](https://speed-type-wnz9.onrender.com) (Note: It mi
 
 ### Built With
 
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
@@ -109,13 +112,14 @@ Best for development and customization. See [DEVSETUP.md](DEVSETUP.md) for detai
 git clone https://github.com/anisharma07/TypeDash
 cd Type-Dash
 
-# Install dependencies
+# Install server dependencies, then install + build the React client
 npm install
+npm run build
 
 # Configure environment (.env file)
 MONGODB_URI=mongodb://localhost:27017/TypeDash
 
-# Start the application
+# Start the application (serves client/dist)
 npm start
 
 # Access the application
@@ -132,10 +136,27 @@ npm start
 
 **For Manual Setup:**
 
-- Node.js (v16 or higher)
+- Node.js (v22 or higher, required by the client toolchain)
 - npm or yarn
 - MongoDB (local or Atlas)
 - Git
+
+### Project Structure
+
+```
+TypeDash/
+├── app.js            # Express + Socket.IO + MongoDB server (serves client/dist)
+├── utils/            # Server helpers (rooms, quotes, usernames)
+├── client/           # React + TypeScript + Vite frontend (two pages: home, game)
+│   ├── src/          # Components, game engine, typed socket protocol, tests
+│   └── dist/         # Build output served by the server (git-ignored)
+├── legacy/public/    # Original vanilla HTML/CSS/JS frontend (reference only)
+└── scripts/          # Docker start/stop/status helpers
+```
+
+The frontend is a React app built with Vite. In production the Node server serves the
+built files from `client/dist`; in development the Vite dev server (port 5173) proxies
+socket and API traffic to the Node server (port 2360). Run `npm test` for the client tests.
 
 ### Environment Configuration
 
@@ -168,7 +189,7 @@ PORT=3000
 
 - Install [ngrok](https://ngrok.com) and create a temporary link to the port where app is running...
 - share the link with your friends and enjoy typing...
-  <img src="/public/images/ng-rok.png" alt="ng-rok">
+  <img src="/legacy/public/images/ng-rok.png" alt="ng-rok">
 
 ### 3. Host on Cloud Service:
 

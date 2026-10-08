@@ -10,8 +10,12 @@ services:
       # Use environment variable with fallback to local mongo
       - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/TypeDash}
     volumes:
+      # Bind-mount the source for live server edits, but shadow build outputs
+      # with anonymous volumes so the mount does not hide what the image built:
+      # node_modules (installed in the image) and client/dist (the React build).
       - ./:/usr/src/app
       - /usr/src/app/node_modules
+      - /usr/src/app/client/dist
     restart: unless-stopped
     profiles:
       - atlas
@@ -26,8 +30,12 @@ services:
     depends_on:
       - mongo
     volumes:
+      # Bind-mount the source for live server edits, but shadow build outputs
+      # with anonymous volumes so the mount does not hide what the image built:
+      # node_modules (installed in the image) and client/dist (the React build).
       - ./:/usr/src/app
       - /usr/src/app/node_modules
+      - /usr/src/app/client/dist
     restart: unless-stopped
     profiles:
       - local-db

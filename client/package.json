@@ -11,6 +11,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@tsparticles/basic": "^4.4.0",
+    "@tsparticles/engine": "^4.4.0",
     "boxicons": "^2.1.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
