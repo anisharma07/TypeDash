@@ -37,3 +37,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# React client
+client/node_modules
+client/dist
+client/coverage

@@ -1,0 +1,5 @@
+/* The React mount node must not create a box: the legacy CSS lays out
+   <body>'s direct children (body is a flex column on the game page). */
+#root {
+  display: contents;
+}
