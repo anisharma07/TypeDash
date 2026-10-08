@@ -4,9 +4,9 @@
 
 | Stage | When | Who | Goal | Checklist |
 |-------|------|-----|------|-----------|
-| **Private alpha** | End of M2 (week 6) | 20–50 friends, classmates, Discord | Find bugs in rooms/racing, tune bots and timings | Staging URL, feedback form, Sentry watched daily |
-| **Public beta** | End of M3 (week 9–10) | Everyone. Legacy users are redirected | Validate retention (D1/D7) and the invite loop **before** monetizing | M3-15 go-live checklist. Legacy migration done. Privacy policy live. Status page |
-| **v1.0 launch** | End of M5 (week 14–15) | Public push | Grow and start revenue | Below |
+| **Private alpha** | End of M2 (solo: ~week 15, two lanes: ~week 8) | 20–50 friends, classmates, Discord | Find bugs in rooms/racing, tune bots and timings | Staging URL, feedback form, Sentry watched daily |
+| **Public beta** | End of M3 (solo: ~week 22, two lanes: ~week 12) | Everyone. Legacy users are redirected | Validate retention (D1/D7) and the invite loop **before** monetizing | M3-15 go-live checklist. Legacy migration done. Privacy policy live. Status page |
+| **v1.0 launch** | End of M5 (solo: ~week 33, two lanes: ~week 17) | Public push | Grow and start revenue | Below |
 | **B2B pilots** | M6–M7 | 3–5 teachers, 1–2 event organizers, 1 company | First paying B2B customers, case studies | Free pilots in exchange for feedback + testimonial |
 
 **v1.0 launch checklist:**
@@ -80,7 +80,7 @@ of 300 students at $3 per student per year is $900/year.
 | Cheaters ruin leaderboards | High | High | Server-authoritative races + replay validation + soft flags + admin review (02§3). Public boards show only verified results |
 | AI costs grow faster than revenue | Medium | Medium | Quotas, caching, batch generation, budget cap with automatic fallback, and the Haiku 5.5 cost option (04§1) |
 | AI output is wrong or inappropriate | Medium | Medium | Structured outputs, grounding check, two moderation layers, evals per prompt version, kill switch per feature |
-| Rebuild takes longer than planned | Medium | Medium | M0 hotfix keeps the live site safe. Ship beta (M3) before AI and payments. Cut M6–M7 scope before cutting quality |
+| Rebuild takes longer than planned | **High** (solo) | Medium | Estimates are derived from task sizes (README) with a 25% buffer, and still carry error. M0 hotfix keeps the live site safe. Ship beta (M3) before AI and payments. Cut in this order: M7, M6, then code mode and learn packs. Re-plan at every milestone exit (12§4) |
 | Single-instance limits | Low (early) | High | Load tests each milestone. Documented Stage 2 path (06§8) |
 | Payment provider availability / tax obligations | Medium | Medium | Billing isolated behind a provider interface. Merchant-of-record fallback (05§3.5). Accountant review before v1.0 |
 | Children's privacy (classrooms) | Medium | High | Teacher-managed student accounts, no email/ads/public profile/open chat for students (M6-06). Legal review before selling to schools |

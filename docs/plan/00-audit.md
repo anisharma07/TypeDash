@@ -51,7 +51,8 @@ exists, and lists the M0 hotfix scope.
 ## M0 hotfix scope (on the legacy code, while the rebuild happens)
 
 Only what protects users and the live site. Everything else is fixed by the rebuild.
-Task details are in [07-backlog.md](07-backlog.md#m0--legacy-hotfix-week-1).
+Task details are in [07-backlog.md](07-backlog.md#m0--legacy-hotfix-8-tasks--55-d).
 
+- **First, a verified database backup (M0-08)**, because the other tasks touch live data.
 - B1 XSS, B2 PII leak, B4 crash guards, B8 secret logging, B3 basic server-side
   score sanity check, B9 duplicate records.

@@ -61,6 +61,7 @@ ObjectIds. Better Auth owns its own `user`, `session`, `account`, and
 |-------|--------|---------|
 | **ModerationFlag** | `targetType: result\|text\|profile\|chat`, `targetId`, `reason`, `auto: boolean`, `status`, `reviewedBy?` | `{status, createdAt}` |
 | **AuditLog** | `actorId`, `action`, `target`, `meta` | `{createdAt}`; TTL 365 d |
+| **DeletionLog** | `userIdHash` (HMAC of the user id, not the id itself), `deletedAt` | `userIdHash` unique. Kept 35 days so a backup restore can re-purge deleted users (10§3) |
 
 ## 2. Redis keys
 
