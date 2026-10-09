@@ -8,7 +8,7 @@ Before setting up TypeDash, ensure you have the following installed on your syst
 
 ### Required Software
 
-- **Node.js** (v22 or higher; required by the React/Vite client toolchain)
+- **Node.js** (22.12 or newer; required by the React/Vite client toolchain)
 
   - Download from [nodejs.org](https://nodejs.org/)
   - Verify installation: `node --version` and `npm --version`
@@ -142,8 +142,11 @@ Choose one of the following database options:
 
    # Other environment variables
    NODE_ENV=development
-   PORT=3000
    ```
+
+   > The server port is **not** read from `.env`: `app.js` reads `PORT` from the process environment
+   > (default `2360`), e.g. `PORT=3000 npm start`. The Vite dev server proxies to `http://localhost:2360`;
+   > if you change the port, start Vite with `TYPEDASH_SERVER=http://localhost:3000 npm run client:dev`.
 
 ### Step 5: Run the Application
 

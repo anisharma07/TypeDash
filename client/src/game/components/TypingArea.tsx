@@ -5,6 +5,7 @@ import { useTypingCaret } from '../hooks/useTypingCaret';
 import { useTypingEngine } from '../hooks/useTypingEngine';
 import { useTypingInput } from '../hooks/useTypingInput';
 import type { TypingAreaProps } from '../types';
+import { withHidden } from './classes';
 
 const PLACEHOLDER = 'Press Enter or Click on Get Ready button to start....';
 
@@ -31,10 +32,6 @@ const LETTER_TAG = 'ty-letter';
 const WORD_TAG = 'ty-word';
 
 const STOPWATCH_RUNNING_COLOR = '#e2b714';
-
-function hiddenWhen(base: string, hidden: boolean): string {
-  return hidden ? `${base} hidden`.trim() : base;
-}
 
 /** Legacy class strings: letter | letter current | letter correctText | letter incorrectText | letter missed | letter incorrectText extra */
 function letterClassName(letter: LetterModel, current: boolean, ended: boolean): string {
@@ -112,10 +109,13 @@ function TypingRound({
   const { engine, commit, transitionRef, passesRef } = typing;
   const input = useTypingInput({ enabled, inputRef, engine: typing });
   useTypingCaret({ refs: caretRefs, engine, commit, ended, transitionRef, passesRef });
+  // The page re-renders this component every second (stopwatch) and on every 'user progress' event; the letters only
+  // change with the engine state or the end of the round, so reuse the element tree (about 600 elements) in between.
+  const quote = useMemo(() => (engine === null ? PLACEHOLDER : renderQuote(engine, ended)), [engine, ended]);
 
   return (
     <div className="container" ref={containerRef}>
-      <div className={hiddenWhen('time-up-warn', !timeUp)}>
+      <div className={withHidden('time-up-warn', !timeUp)}>
         <p>Time Up!</p>
       </div>
       <div className="timerClass">
@@ -128,22 +128,22 @@ function TypingRound({
           </strong>
         </h3>
       </div>
-      <div className={hiddenWhen('caps-lock', !input.capsLock)}>
+      <div className={withHidden('caps-lock', !input.capsLock)}>
         <p>
           <i className="bx bxs-lock-alt"></i> Caps Lock
         </p>
       </div>
-      <div id="cursor" ref={cursorRef} className={hiddenWhen('', !input.started || ended)}></div>
+      <div id="cursor" ref={cursorRef} className={withHidden('', !input.started || ended)}></div>
       <div
         className="text-content-div"
         ref={contentDivRef}
         style={{ overflow: ended ? 'auto' : 'hidden' }}
       >
         <div
-          className={hiddenWhen('dummy-cursor', !enabled || input.started || ended)}
+          className={withHidden('dummy-cursor', !enabled || input.started || ended)}
         ></div>
         <p id="text-content" ref={textRef} onClick={input.focusInput}>
-          {engine === null ? PLACEHOLDER : renderQuote(engine, ended)}
+          {quote}
         </p>
       </div>
       <input

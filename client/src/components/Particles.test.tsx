@@ -5,8 +5,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const { destroys, loadParticles } = vi.hoisted(() => {
   const destroys: ReturnType<typeof vi.fn>[] = [];
   const loadParticles = vi.fn(async (el: HTMLElement, _id: string) => {
-    const canvas = document.createElement('canvas');
-    el.appendChild(canvas);
+    // Like the real engine (getCanvasFromContainer): reuse a canvas that already lives in the element.
+    // A mock that always created a fresh canvas hid the StrictMode bug where two loads shared one canvas.
+    const canvas = el.querySelector('canvas') ?? el.appendChild(document.createElement('canvas'));
     const destroy = vi.fn(() => canvas.remove());
     destroys.push(destroy);
     return { destroy };
@@ -49,6 +50,28 @@ describe('<Particles />', () => {
     await waitFor(() => expect(destroys).toHaveLength(2));
     await waitFor(() => expect(container.querySelectorAll('canvas')).toHaveLength(1));
     expect(destroys.filter((d) => d.mock.calls.length > 0)).toHaveLength(1);
+  });
+
+  it('gives every load its own host element, so a discarded StrictMode load cannot take the live canvas with it', async () => {
+    const { container } = render(
+      <StrictMode>
+        <Particles />
+      </StrictMode>,
+    );
+    await waitFor(() => expect(loadParticles).toHaveBeenCalledTimes(2));
+    const hosts = loadParticles.mock.calls.map((c) => c[0]);
+    expect(hosts[0]).not.toBe(hosts[1]);
+    expect(container.querySelector('div#tsparticles')!.contains(hosts[1] as HTMLElement)).toBe(true);
+    await waitFor(() => expect(container.querySelectorAll('canvas')).toHaveLength(1));
+  });
+
+  it('removes its private host element on unmount', async () => {
+    const { container, unmount } = render(<Particles />);
+    await waitFor(() => expect(container.querySelectorAll('canvas')).toHaveLength(1));
+    const host = container.querySelector('div#tsparticles')!;
+    expect(host.children).toHaveLength(1);
+    unmount();
+    expect(host.children).toHaveLength(0);
   });
 
   it('uses a distinct id per load', async () => {

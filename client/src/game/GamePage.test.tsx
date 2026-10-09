@@ -769,7 +769,11 @@ describe('round lifecycle', () => {
     s.tick(3000);
     s.socket().clearEmitted();
     const socket = s.socket();
+    expect(vi.getTimerCount()).toBeGreaterThan(0); // the countdown interval and the 10 s start timer are alive
     s.unmount();
+    // Counting live timers is what makes this test able to fail: after unmount the socket is gone, so a leaked
+    // timer would only call a no-op emit and the assertions below could not tell.
+    expect(vi.getTimerCount()).toBe(0);
     s.tick(120_000);
     expect(socket.emitted).toEqual([]);
     expect(socket.listenerCount()).toBe(0);

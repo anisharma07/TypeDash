@@ -7,15 +7,22 @@ const getLoader = () => (loaderModule ??= import('./particlesLoader'));
 /**
  * Shared animated star background (legacy `#tsparticles`). The tsParticles
  * bundle is loaded lazily; the container is destroyed on unmount and a load
- * that finishes after unmount is destroyed immediately, so StrictMode's
- * mount -> cleanup -> mount never leaves a duplicate canvas behind.
+ * that finishes after unmount is destroyed immediately.
+ *
+ * Every effect run loads into its OWN child element. tsParticles reuses an
+ * existing canvas inside the element it is given, so under StrictMode
+ * (mount -> cleanup -> mount) two loads into the same host would share one
+ * canvas, and the discarded first container's late destroy() would remove the
+ * canvas the second one is drawing on (no stars in dev on about half the loads).
  */
 export function Particles() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    const host = ref.current;
+    if (!host) return;
+    const element = document.createElement('div');
+    host.appendChild(element);
     let cancelled = false;
     let container: { destroy: () => void } | undefined;
     const id = `tsparticles-${++instance}`;
@@ -36,6 +43,7 @@ export function Particles() {
       cancelled = true;
       container?.destroy();
       container = undefined;
+      element.remove();
     };
   }, []);
 

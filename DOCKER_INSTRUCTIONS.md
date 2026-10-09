@@ -90,6 +90,15 @@ Because of this, **source changes to the client are not picked up by a restart**
 rebuild with `docker-compose --profile <profile> up --build -V -d` (`-V` renews the
 anonymous volumes so a stale `client/dist` is not reused; `./scripts/start.sh` already does this).
 
+Two side effects of those anonymous volumes:
+
+- Every `-V` rebuild leaves the previous run's anonymous volumes behind (`docker-compose down` does not remove
+  them without `-v`, and `down -v` would also delete the MongoDB data volume, so do not use it casually). List the
+  leftovers with `docker volume ls -f dangling=true` and remove the ones you recognise with `docker volume rm <name>`;
+  avoid a blanket `docker volume prune` on older Docker versions, which can also remove unused *named* volumes.
+- Docker creates an empty, root-owned `client/dist` directory in your working copy as the mount point. A
+  `client/dist` you built on the host is hidden inside the container by the image's own build.
+
 ## Environment Variables
 
 The application uses the following environment variables:

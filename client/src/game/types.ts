@@ -1,8 +1,7 @@
 /**
- * Seams between the game-page components, so they can be built in parallel.
- * Behavioural source of truth for all of them: legacy/public/js/*.js and
- * legacy/public/multiplayer.html (DOM structure and class names must be kept:
- * the legacy CSS in src/styles/ is reused unchanged).
+ * Contracts between the game page and its two big building blocks (the typing area and the leaderboard modal).
+ * Both render the DOM structure and class names of the original multiplayer.html, because the original
+ * stylesheets in src/styles/ are reused unchanged.
  */
 import type { Difficulty } from '../types/socket';
 

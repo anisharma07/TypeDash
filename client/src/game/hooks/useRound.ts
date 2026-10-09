@@ -261,6 +261,10 @@ export function useRound(deps: RoundDeps): Round {
       timers.cancel(countingRef.current);
       timers.cancel(startRef.current);
       timers.cancel(matchRef.current);
+      // The four start-light timeouts end the sequence ("start typing..." banner off, lights back to red/yellow/green).
+      // Legacy leaked them into the next round, where they still fired and finished the job; cancelling them means
+      // the final frame must be applied here, or a round that starts early keeps the banner and green lights.
+      const lightsInFlight = lightRefs.current.length > 0;
       for (const handle of lightRefs.current) timers.cancel(handle);
       lightRefs.current = [];
 
@@ -289,6 +293,16 @@ export function useRound(deps: RoundDeps): Round {
         summaryVisible: false,
         leaveMatchVisible: true,
         playerStatusVisible: false,
+        ...(lightsInFlight
+          ? {
+              countOverVisible: false,
+              light: {
+                red: { ...prev.light.red, backgroundColor: '#ff0000' },
+                yellow: { ...prev.light.yellow, backgroundColor: '#ffd505' },
+                green: { ...prev.light.green, backgroundColor: '#03ca0b' },
+              },
+            }
+          : {}),
       }));
 
       countingRef.current = timers.every(countTick, 1000);

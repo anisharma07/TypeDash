@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import type { ChangeEvent } from 'react';
 import { Particles } from '../components/Particles';
 import { AVATARS } from '../data/avatars';
@@ -25,15 +25,19 @@ export function HomePage() {
   const joinIdRef = useRef<HTMLInputElement>(null);
   const avatarRef = useRef(avatar);
   const girlRef = useRef(isGirl);
-  avatarRef.current = avatar;
-  girlRef.current = isGirl;
 
   const rollName = () => {
     setUsername(pickRandomName(girlRef.current));
     usernameRef.current?.focus();
   };
   const rollNameRef = useRef(rollName);
-  rollNameRef.current = rollName;
+  // "Latest value" refs for the document key handler below. They are written after commit, not during render
+  // (render must stay pure: a discarded concurrent render would otherwise leak its values into the handler).
+  useLayoutEffect(() => {
+    avatarRef.current = avatar;
+    girlRef.current = isGirl;
+    rollNameRef.current = rollName;
+  });
 
   useEffect(() => {
     usernameRef.current?.focus();

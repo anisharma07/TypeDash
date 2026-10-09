@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { LeaderboardModalProps } from '../types';
 import { buildBoards, fetchLeaderboard } from '../../lib/leaderboard';
 import type { Boards, LeaderboardEntry } from '../../lib/leaderboard';
@@ -55,10 +55,6 @@ export function LeaderboardModal({
   }, [refreshToken]);
 
   const easyActive = level === 'easy';
-  const view = useMemo(
-    () => ({ easy: boards.easy, medium: boards.medium }),
-    [boards],
-  );
 
   return (
     <div className={`leader-board-menu${open ? '' : ' hidden'}`}>
@@ -87,10 +83,10 @@ export function LeaderboardModal({
           </div>
         </div>
         <div className={`player-rankings-easy${easyActive ? '' : ' hidden'}`}>
-          <RankCards entries={view.easy} joinId={joinId} />
+          <RankCards entries={boards.easy} joinId={joinId} />
         </div>
         <div className={`player-rankings-medium${easyActive ? ' hidden' : ''}`}>
-          <RankCards entries={view.medium} joinId={joinId} />
+          <RankCards entries={boards.medium} joinId={joinId} />
         </div>
       </div>
     </div>

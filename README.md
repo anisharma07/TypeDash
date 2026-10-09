@@ -136,7 +136,7 @@ npm start
 
 **For Manual Setup:**
 
-- Node.js (v22 or higher, required by the client toolchain)
+- Node.js 22.12 or newer (required by the client toolchain: Vite 8 and Vitest)
 - npm or yarn
 - MongoDB (local or Atlas)
 - Git
@@ -174,8 +174,11 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/TypeDash
 
 # Optional configuration
 NODE_ENV=development
-PORT=3000
 ```
+
+The server port is read from the process environment, not from `.env` (default `2360`): start it with
+`PORT=3000 npm start`. The Vite dev proxy (`npm run client:dev`) expects the server on `2360`; point it elsewhere
+with `TYPEDASH_SERVER=http://localhost:3000 npm run client:dev`.
 
 ## Playing Suggestions
 
