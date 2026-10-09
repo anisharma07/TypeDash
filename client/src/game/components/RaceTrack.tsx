@@ -64,7 +64,7 @@ export function RaceTrack({ lanes }: { lanes: Lane[] | null }) {
       <img src="/images/squares.png" alt="square1" className="square1" />
       <img src="/images/squares.png" alt="square2" className="square2" />
       <div className="progress-bar-container">
-        {lanes === null ? <PlaceholderLane /> : lanes.map((lane) => <LaneRow key={lane.id} lane={lane} />)}
+        {lanes === null ? <PlaceholderLane /> : lanes.map((lane) => <LaneRow key={`${lane.generation}:${lane.id}`} lane={lane} />)}
       </div>
     </div>
   );

@@ -657,6 +657,27 @@ describe('round lifecycle', () => {
     expect(typing().timeLabel).toBe('01:00');
   });
 
+  it('arms the input at t=10 even when the round was ended during the countdown (legacy startMatchCountdown ignores it)', () => {
+    const s = startedRound();
+    s.tick(3000);
+    s.server('end game on request'); // every player pressed "Leave match" while the lights counted down
+    expect(typing().ended).toBe(true);
+    expect(typing().enabled).toBe(false);
+    s.tick(7000); // t = 10 s
+    expect(typing().enabled).toBe(true);
+    expect(typing().ended).toBe(false); // otherwise the typing area would hide both carets while accepting keys
+  });
+
+  it('rebuilding the lanes remounts them (legacy replaced the DOM), but progress updates keep the same nodes', () => {
+    const s = startedRound();
+    const before = q('#bobprogress-bar');
+    s.server('user progress', [user('bob', { progress: 40, currWpm: 30 }), user('me', { username: 'ann', progress: 10, currWpm: 20 })]);
+    expect(q('#bobprogress-bar')).toBe(before); // 'user progress' only updates in place
+    s.server('add user progress', [user('bob'), user('me', { username: 'ann' }), user('cy')]);
+    expect(q('#bobprogress-bar')).not.toBe(before); // rebuilt, so the avatar snaps to 0% instead of animating back
+    expect(q('#bobavatar').style.left).toBe('');
+  });
+
   it('"end game on request" ends the round like a normal end', () => {
     const s = startedRound();
     s.tick(10_000 + 5000);

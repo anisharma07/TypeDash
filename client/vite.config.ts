@@ -13,6 +13,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    // The legacy stylesheets are reused byte-for-byte, and the default CSS
+    // minifier (lightningcss) changes their meaning: it drops the standard
+    // `backdrop-filter` when the source lists it BEFORE `-webkit-backdrop-filter`
+    // (so Chromium/Firefox lose every glass blur, which also moves the
+    // absolutely-positioned key hints that rely on it as containing block) and
+    // turns the invalid `gap: 1` (ignored by browsers) into a real `gap: 1px`.
+    // Shipping the CSS as authored keeps rendering identical; gzip makes the
+    // size difference negligible.
+    cssMinify: false,
     rollupOptions: {
       input: {
         index: resolve(import.meta.dirname, 'index.html'),

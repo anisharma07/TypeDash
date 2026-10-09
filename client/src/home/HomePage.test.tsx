@@ -177,3 +177,32 @@ describe('HomePage', () => {
     expect(document.querySelectorAll('script, img[onerror]')).toHaveLength(0);
   });
 });
+
+describe('inline whitespace of the legacy markup', () => {
+  // The legacy HTML had whitespace between these inline siblings and it renders as real spaces
+  // (about 5px each). JSX drops it silently, which shifted the username row and the LOG IN row.
+  const gaps = (parent: Element) =>
+    Array.from(parent.children)
+      .slice(0, -1)
+      .map((child) => child.nextSibling)
+      .map((node) => node?.nodeType === Node.TEXT_NODE && /^\s+$/.test(node.nodeValue ?? ''));
+
+  it('keeps a whitespace text node between every sibling of the username row', () => {
+    const { container } = render(<HomePage />);
+    const row = container.querySelector('#entry-form .details')!;
+    // children: p.max-char-warning, label, hidden input, username input, alt, ctrl, dice, switch
+    const siblings = Array.from(row.children);
+    expect(siblings.map((el) => el.tagName)).toEqual(['P', 'LABEL', 'INPUT', 'INPUT', 'IMG', 'IMG', 'IMG', 'LABEL']);
+    // legacy: whitespace after the warning paragraph is between block and inline content (ignored by layout), the
+    // gaps that matter are the ones between label ... switch
+    const g = gaps(row);
+    expect(g.slice(1)).toEqual([true, true, true, true, true, true]);
+  });
+
+  it('keeps a whitespace text node between the footer login input, key hint and button', () => {
+    const { container } = render(<HomePage />);
+    const form = container.querySelector('form#log-in')!;
+    expect(Array.from(form.children).map((el) => el.tagName)).toEqual(['INPUT', 'IMG', 'BUTTON']);
+    expect(gaps(form)).toEqual([true, true]);
+  });
+});

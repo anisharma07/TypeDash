@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createEngine, pressBackspace, pressSpace, typeChar } from '../../engine';
 import type { EngineState, LetterModel } from '../../engine';
@@ -642,7 +642,12 @@ const toRect = ({ left, top, width, height }: Box) => ({
   toJSON: () => ({}),
 });
 
-/** Fakes layout: boxes keyed by container / content div / "w<word>" / "w<word>l<letter>". */
+/**
+ * Fakes layout: boxes keyed by container / content div / "w<word>" / "w<word>l<letter>".
+ * Word and letter boxes are SCROLL-AWARE: they move down by the current marginTop of
+ * #text-content (negative = scrolled up), exactly like in a browser. This matters because
+ * the caret computation re-measures after it scrolled.
+ */
 function mockLayout(boxes: Record<string, Box>) {
   const key = (el: HTMLElement): string | undefined => {
     if (el.classList.contains('container')) return 'container';
@@ -660,7 +665,10 @@ function mockLayout(boxes: Record<string, Box>) {
     const fallback: Box = k === 'container' || k === 'content' || !k
       ? { left: 0, top: 0, width: 0, height: 0 }
       : { left: 120, top: boxes.content.top + 10, width: 20, height: 30 };
-    return toRect((k ? boxes[k] : undefined) ?? fallback) as DOMRect;
+    const box = (k ? boxes[k] : undefined) ?? fallback;
+    const isTextBox = k !== undefined && k !== 'container' && k !== 'content';
+    const scroll = isTextBox ? parseFloat(document.getElementById('text-content')?.style.marginTop || '0') || 0 : 0;
+    return toRect({ ...box, top: box.top + scroll }) as DOMRect;
   });
 }
 
@@ -713,8 +721,11 @@ describe('cursor positioning and line scrolling', () => {
     const { q, user } = setup({ text: 'ab cd' });
     await user.click(q('#text-content'));
     await user.keyboard('ab ');
+    // pass 1 scrolls by 2 * 36 and sets the cursor from the pre-scroll position (78);
+    // pass 2 re-measures the scrolled layout (word now at 128 -> 58px below the top, no more scrolling)
+    // and puts the cursor on the real letter position: 128 - 50 + 2
     expect(parseFloat(q('#text-content').style.marginTop)).toBeCloseTo(-72, 5);
-    expect(parseFloat(q('#cursor').style.top)).toBeCloseTo(200 - 50 - 72, 5); // relativeTop - 2 * hbythree
+    expect(parseFloat(q('#cursor').style.top)).toBeCloseTo(128 - 50 + 2, 5);
   });
 
   it('wide layout: 90px or less below the top does not scroll', async () => {
@@ -741,8 +752,9 @@ describe('cursor positioning and line scrolling', () => {
     const { q, user } = setup({ text: 'ab cd' });
     await user.click(q('#text-content'));
     await user.keyboard('ab ');
+    // pass 1 scrolls one third (36); pass 2 sees the word 44px below the top (< 60): stops, caret on the real letter
     expect(parseFloat(q('#text-content').style.marginTop)).toBeCloseTo(-36, 5);
-    expect(parseFloat(q('#cursor').style.top)).toBeCloseTo(150 - 50 - 36, 5);
+    expect(parseFloat(q('#cursor').style.top)).toBeCloseTo(150 - 36 - 50 + 2, 5);
   });
 
   it('narrow layout: the same offset does not scroll in the wide layout (threshold differs)', async () => {
@@ -758,20 +770,95 @@ describe('cursor positioning and line scrolling', () => {
     expect(q('#text-content').style.marginTop).toBe('');
   });
 
-  it('accumulates the scroll margin over successive scrolls', async () => {
+  it('accumulates the scroll margin over successive scrolls (a scrolling Space re-measures and can scroll again)', async () => {
     mockLayout({
       container,
-      content: narrow,
+      content: narrow, // a third of the viewport is 36px, scroll threshold 60px
       w1: { left: 170, top: 150, width: 40, height: 30 },
       w1l0: { left: 170, top: 150, width: 20, height: 30 },
       w1l1: { left: 190, top: 150, width: 20, height: 30 },
+      w2: { left: 220, top: 230, width: 40, height: 30 },
+      w2l0: { left: 220, top: 230, width: 20, height: 30 },
     });
-    const { q, user } = setup({ text: 'ab cd' });
+    const { q, user } = setup({ text: 'ab cd ef' });
     await user.click(q('#text-content'));
     await user.keyboard('ab ');
+    // w1 starts 80px below the top: pass 1 scrolls 36 (44px left), pass 2 sees 44 < 60 and stops
     expect(parseFloat(q('#text-content').style.marginTop)).toBeCloseTo(-36, 5);
-    await user.keyboard('c'); // the (fake) layout did not move, so it scrolls another third
-    expect(parseFloat(q('#text-content').style.marginTop)).toBeCloseTo(-72, 5);
+    await user.keyboard('cd'); // plain letters: one pass, nothing to scroll
+    expect(parseFloat(q('#text-content').style.marginTop)).toBeCloseTo(-36, 5);
+    await user.keyboard(' ');
+    // w2 is 230 - 36 - 70 = 124px below the top: pass 1 -> -72 (88px), pass 2 -> -108 (52px), done
+    expect(parseFloat(q('#text-content').style.marginTop)).toBeCloseTo(-108, 5);
+    // when a pass scrolls, legacy sets the caret from the pre-scroll measurement WITHOUT the +2px offset:
+    // pass 2 measured the word at 230 - 72 = 158 -> relativeTop 108, minus one third (36) = 72
+    expect(parseFloat(q('#cursor').style.top)).toBeCloseTo(230 - 72 - 50 - 36, 5);
+  });
+
+  it('round end: finishing on the final keystroke re-applies the scroll after clearing it; a time-up end just clears it (legacy endGame())', async () => {
+    const layout = {
+      container,
+      content: wide, // a third is 36
+      w0: { left: 120, top: 80, width: 40, height: 30 },
+      w0l0: { left: 120, top: 80, width: 20, height: 30 },
+      w0l1: { left: 140, top: 80, width: 20, height: 30 },
+      w1: { left: 170, top: 200, width: 40, height: 30 }, // 130px below the top: scrolls (> 90)
+      w1l0: { left: 170, top: 200, width: 20, height: 30 },
+      w1l1: { left: 190, top: 200, width: 20, height: 30 },
+    };
+    // (a) finished by typing: legacy endGame() cleared the offset, then the keystroke handler's trailing
+    //     getLineAndCursor() measured the unscrolled layout and scrolled again, so the last line stays in view
+    mockLayout(layout);
+    const finished = setup({ text: 'ab cd' });
+    await finished.user.click(finished.q('#text-content'));
+    await finished.user.keyboard('ab cd');
+    expect(finished.onComplete).toHaveBeenCalledTimes(1);
+    finished.rerender({ enabled: false, ended: true });
+    expect(parseFloat(finished.q('#text-content').style.marginTop)).toBeCloseTo(-72, 5);
+    expect(finished.q('.text-content-div').style.overflow).toBe('auto');
+    finished.unmount();
+    // (b) ended by the clock with the quote unfinished: only the clear happens, the text shows from the top
+    vi.restoreAllMocks();
+    mockLayout(layout);
+    const timedOut = setup({ text: 'ab cd' });
+    await timedOut.user.click(timedOut.q('#text-content'));
+    await timedOut.user.keyboard('ab ');
+    expect(parseFloat(timedOut.q('#text-content').style.marginTop)).toBeCloseTo(-72, 5);
+    timedOut.rerender({ enabled: false, ended: true });
+    expect(timedOut.q('#text-content').style.marginTop).toBe('');
+  });
+
+  it('runs the caret computation once per letter, twice for an accepted Space and once for a rejected Space (legacy parity)', async () => {
+    const spy = mockLayout({ container, content: wide });
+    const { q, user } = setup({ text: 'ab cd' });
+    await user.click(q('#text-content'));
+    const contentMeasures = () =>
+      spy.mock.contexts.filter((el) => (el as HTMLElement).classList?.contains('text-content-div')).length;
+    const passesFor = async (keys: string) => {
+      const before = contentMeasures();
+      await user.keyboard(keys);
+      return contentMeasures() - before;
+    };
+    expect(await passesFor('a')).toBe(1);
+    expect(await passesFor(' ')).toBe(1); // rejected: the word is not complete, engine state unchanged
+    expect(await passesFor('b')).toBe(1);
+    expect(await passesFor(' ')).toBe(2); // accepted: spacePressed() + the trailing call of initTyping()
+  });
+
+  it('a soft-keyboard deletion (input event shorter than before) runs the caret computation twice, like legacy', async () => {
+    const spy = mockLayout({ container, content: wide });
+    const { q, user } = setup({ text: 'ab cd' });
+    await user.click(q('#text-content'));
+    await user.keyboard('a');
+    const input = q<HTMLInputElement>('.input-field');
+    const before = spy.mock.contexts.filter((el) => (el as HTMLElement).classList?.contains('text-content-div')).length;
+    // soft keyboards delete through an input event without a Backspace keydown
+    act(() => {
+      input.value = '';
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'deleteContentBackward' }));
+    });
+    const after = spy.mock.contexts.filter((el) => (el as HTMLElement).classList?.contains('text-content-div')).length;
+    expect(after - before).toBe(2);
   });
 
   it('steps back 36.1px (no transition) when backspacing above the viewport top', async () => {
@@ -786,13 +873,14 @@ describe('cursor positioning and line scrolling', () => {
     await user.click(q('#text-content'));
     await user.keyboard('a');
     q('#text-content').style.marginTop = '-72px';
-    // backspace puts the caret back on word 0 whose top (60) is above the content top (70)
+    // backspace puts the caret back on word 0 whose MEASURED top (60) is above the content top (70).
+    // The layout mock is scroll-aware, so give the unscrolled position: measured = base + marginTop(-72)
     mockLayout({
       container,
       content: wide,
-      w0: { left: 120, top: 60, width: 40, height: 30 },
-      w0l0: { left: 120, top: 60, width: 20, height: 30 },
-      w0l1: { left: 140, top: 60, width: 20, height: 30 },
+      w0: { left: 120, top: 132, width: 40, height: 30 },
+      w0l0: { left: 120, top: 132, width: 20, height: 30 },
+      w0l1: { left: 140, top: 132, width: 20, height: 30 },
     });
     await user.keyboard('{Backspace}');
     expect(q('#cursor').style.transition).toBe('');

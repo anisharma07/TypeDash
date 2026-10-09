@@ -130,8 +130,10 @@ export function HomePage() {
               <p className={warning ? 'max-char-warning' : 'max-char-warning hidden'}>
                 maximum 10 characters allowed!
               </p>
-              <label htmlFor="username">Username:</label>
-              <input type="hidden" name="Device" value={device} className="Device-logged-in" />
+              {/* The legacy markup had whitespace between these inline siblings; it renders as real spaces
+                  (JSX drops it), so each gap is restored with {' '} to keep the row pixel-identical. */}
+              <label htmlFor="username">Username:</label>{' '}
+              <input type="hidden" name="Device" value={device} className="Device-logged-in" />{' '}
               <input
                 type="text"
                 id="username"
@@ -144,15 +146,15 @@ export function HomePage() {
                 ref={usernameRef}
                 value={username}
                 onChange={onUsernameChange}
-              />
-              <img src="images/alt.png" alt="alt" className="alt-key" />
-              <img src="images/ctrl.png" alt="alt" className="ctrl-key" />
+              />{' '}
+              <img src="images/alt.png" alt="alt" className="alt-key" />{' '}
+              <img src="images/ctrl.png" alt="alt" className="ctrl-key" />{' '}
               <img
                 src="images/randomdice.png"
                 alt="dice-roll"
                 className="random-name-dice"
                 onClick={rollName}
-              />
+              />{' '}
               <label className="ui-switch">
                 <input
                   type="checkbox"
@@ -226,16 +228,15 @@ export function HomePage() {
             min={100000}
             required
             ref={joinIdRef}
-          />
-          <img src="images/log-in-bind.png" alt="loginbind" className="log-in-bind" />
-
+          />{' '}
+          <img src="images/log-in-bind.png" alt="loginbind" className="log-in-bind" />{' '}
           <button type="submit">LOG IN</button>
         </form>
         <div className="glitch-wrapper">
           <div className="glitch" data-glitch="copyright">
             copyright
-          </div>
-          <i className="bx bx-copyright"></i>
+          </div>{' '}
+          <i className="bx bx-copyright"></i>{' '}
           <p className="current-year">{new Date().getFullYear()}</p>
         </div>
       </footer>

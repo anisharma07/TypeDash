@@ -83,15 +83,20 @@ interface UseTypingCaretArgs {
   commit: number;
   ended: boolean;
   transitionRef: RefObject<string>;
+  passesRef: RefObject<number>;
 }
 
 /**
  * Layout effects behind the caret and the line scrolling.
  * - mount (every new round, the parent remounts): cursor back to top 53px / left 23px, scroll cleared
- * - after each applied operation: legacy `cursor.style.transition = ...; getLineAndCursor()`
- * - round end: scroll cleared (the text div becomes overflow:auto, rendered by the component)
+ * - after each applied operation: legacy `cursor.style.transition = ...; getLineAndCursor()`, run
+ *   once or twice exactly as often as legacy did (the second pass re-measures the layout the first
+ *   pass just scrolled, so it can scroll again and corrects the caret position)
+ * - round end: scroll cleared (the text div becomes overflow:auto, rendered by the component); when the
+ *   round ended on the final keystroke the legacy handler still ran getLineAndCursor() AFTER endGame()
+ *   had cleared the offset, which re-applies a scroll so the last lines stay visible
  */
-export function useTypingCaret({ refs, engine, commit, ended, transitionRef }: UseTypingCaretArgs): void {
+export function useTypingCaret({ refs, engine, commit, ended, transitionRef, passesRef }: UseTypingCaretArgs): void {
   useLayoutEffect(() => {
     const cursor = refs.cursor.current;
     const text = refs.text.current;
@@ -109,12 +114,20 @@ export function useTypingCaret({ refs, engine, commit, ended, transitionRef }: U
     if (ended || engine === null) return;
     const cursor = refs.cursor.current;
     if (cursor) cursor.style.transition = transitionRef.current;
-    getLineAndCursor(refs, engine);
-  }, [commit, engine, ended, refs, transitionRef]);
+    for (let pass = 0; pass < passesRef.current; pass++) getLineAndCursor(refs, engine);
+  }, [commit, engine, ended, refs, transitionRef, passesRef]);
+
+  // Latest engine for the round-end effect below without re-running it on every operation.
+  const latestEngine = useRef(engine);
+  useLayoutEffect(() => {
+    latestEngine.current = engine;
+  });
 
   useLayoutEffect(() => {
     if (!ended) return;
     const text = refs.text.current;
     if (text) text.style.marginTop = '';
+    const finalState = latestEngine.current;
+    if (finalState?.finished) getLineAndCursor(refs, finalState);
   }, [ended, refs]);
 }

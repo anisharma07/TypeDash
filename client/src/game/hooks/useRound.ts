@@ -179,11 +179,16 @@ export function useRound(deps: RoundDeps): Round {
     if (timeLeftRef.current === 0) endGameRef.current();
   }, [sendProgress, endGameRef]);
 
-  /** legacy startMatchCountdown() */
+  /**
+   * legacy startMatchCountdown(): arms the input and the clock 10 s after 'start game' whatever happened in
+   * between. If the round was ended during the countdown ('end game on request' after every player pressed
+   * "Leave match") legacy still started typing at t=10 and showed the caret, so `ended` is cleared here;
+   * otherwise the page would accept keystrokes with both carets hidden.
+   */
   const startMatch = useCallback(() => {
     timers.cancel(matchRef.current);
     matchRef.current = timers.every(timerTick, 1000);
-    patch({ enabled: true, timerRunning: true, countdownVisible: false });
+    patch({ enabled: true, timerRunning: true, countdownVisible: false, ended: false });
   }, [timers, timerTick, patch]);
 
   /** legacy countCounter() */

@@ -109,9 +109,9 @@ function TypingRound({
   );
 
   const typing = useTypingEngine(text, onStats, onComplete);
-  const { engine, commit, transitionRef } = typing;
+  const { engine, commit, transitionRef, passesRef } = typing;
   const input = useTypingInput({ enabled, inputRef, engine: typing });
-  useTypingCaret({ refs: caretRefs, engine, commit, ended, transitionRef });
+  useTypingCaret({ refs: caretRefs, engine, commit, ended, transitionRef, passesRef });
 
   return (
     <div className="container" ref={containerRef}>

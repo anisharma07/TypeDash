@@ -74,11 +74,14 @@ export function useTypingInput({ enabled, inputRef, engine }: UseTypingInputArgs
     indexRef.current++;
     if (typedChar === ' ') {
       resetField(input);
-      apply(pressSpace, CURSOR_TRANSITION);
+      // legacy: an accepted space ran getLineAndCursor() inside spacePressed() and again at the end of initTyping();
+      // a rejected space (engine returns the same state) only ran the trailing call
+      apply(pressSpace, CURSOR_TRANSITION, (previous, next) => (next !== previous ? 2 : 1));
     } else if (typedChar === undefined) {
       // a deletion on a soft keyboard: the value got shorter
       resetField(input);
-      apply(pressBackspace, CURSOR_TRANSITION);
+      // legacy: backspacePressed() ran getLineAndCursor(), then initTyping() ran it again
+      apply(pressBackspace, CURSOR_TRANSITION, () => 2);
     } else {
       apply((state) => typeChar(state, typedChar), CURSOR_TRANSITION);
     }

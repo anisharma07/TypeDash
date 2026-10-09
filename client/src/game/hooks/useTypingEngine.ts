@@ -24,8 +24,18 @@ export interface TypingEngineApi {
   commit: number;
   /** CSS transition the caret should use for the next caret update (legacy `cursor.style.transition`). */
   transitionRef: RefObject<string>;
-  /** Apply one engine operation and schedule a caret update. */
-  apply: (op: (state: EngineState) => EngineState, transition: string) => void;
+  /** How many times the caret/scroll computation runs for the latest operation (legacy runs it twice for an accepted Space and for a soft-keyboard deletion). */
+  passesRef: RefObject<number>;
+  /**
+   * Apply one engine operation and schedule a caret update.
+   * `passes` (default 1) maps (previous, next) state to the number of legacy
+   * getLineAndCursor() calls that operation made.
+   */
+  apply: (
+    op: (state: EngineState) => EngineState,
+    transition: string,
+    passes?: (previous: EngineState, next: EngineState) => number,
+  ) => void;
 }
 
 /**
@@ -46,14 +56,20 @@ export function useTypingEngine(
   const [commit, setCommit] = useState(0);
   const engineRef = useRef<EngineState | null>(engine);
   const transitionRef = useRef('');
+  const passesRef = useRef(1);
 
   const apply = useCallback(
-    (op: (state: EngineState) => EngineState, transition: string) => {
+    (
+      op: (state: EngineState) => EngineState,
+      transition: string,
+      passes?: (previous: EngineState, next: EngineState) => number,
+    ) => {
       const current = engineRef.current;
       if (current === null) return;
       const next = op(current);
       engineRef.current = next;
       transitionRef.current = transition;
+      passesRef.current = passes ? passes(current, next) : 1;
       setEngine(next);
       setCommit((c) => c + 1);
     },
@@ -80,5 +96,5 @@ export function useTypingEngine(
     }
   }, [engine]);
 
-  return { engine, engineRef, commit, transitionRef, apply };
+  return { engine, engineRef, commit, transitionRef, passesRef, apply };
 }

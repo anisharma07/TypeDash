@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { avatarLeft } from '../../lib/gameRules';
 import type { RoomUser } from '../../types/socket';
 
@@ -8,6 +8,11 @@ export const STATUS_NOT_READY_COLOR = '#ff4848';
 /** One `div.progress-bar` of the race track (legacy refreshProgressContainer). */
 export interface Lane {
   id: string;
+  /**
+   * Increments with every rebuild ('add/remove user progress'). Part of the React key: the legacy code replaced
+   * the whole DOM on a rebuild, so avatars snapped back to 0% instead of animating (the CSS animates `left`).
+   */
+  generation: number;
   username: string;
   avatar: string;
   /** rendered as "YOU" with the `player-you` class */
@@ -44,15 +49,18 @@ export interface RaceTrack {
  */
 export function useRaceTrack(getSocketId: () => string | undefined): RaceTrack {
   const [lanes, setLanes] = useState<Lane[] | null>(null);
+  const generation = useRef(0);
 
   /** 'add user progress' / 'remove user progress': rebuild every lane from scratch, current player first. */
   const refresh = useCallback(
     (users: RoomUser[]) => {
       const selfId = getSocketId();
+      const gen = ++generation.current;
       let built: Lane[] = [];
       for (const user of users) {
         const lane: Lane = {
           id: user.id,
+          generation: gen,
           username: user.username,
           avatar: user.avatar,
           isSelf: selfId === user.id,
