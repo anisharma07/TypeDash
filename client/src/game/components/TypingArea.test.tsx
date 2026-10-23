@@ -470,7 +470,7 @@ describe('round end presentation', () => {
     expect(q('#text-content').style.marginTop).toBe('');
     expect(letterEls(q('#text-content')).map((l) => l.className)).toEqual([
       'letter correctText',
-      'letter incorrectText current',
+      'letter current incorrectText', // legacy order: `current` arrived with the caret, the status at the end of the round
       'letter incorrectText',
       'letter incorrectText',
     ]);

@@ -35,7 +35,9 @@ const STOPWATCH_RUNNING_COLOR = '#e2b714';
 
 /** Legacy class strings: letter | letter current | letter correctText | letter incorrectText | letter missed | letter incorrectText extra */
 function letterClassName(letter: LetterModel, current: boolean, ended: boolean): string {
-  const classes = ['letter'];
+  // legacy order: `current` is added when the caret arrives, a status class only afterwards (at the end of the
+  // round for letters that were never typed), so a current letter reads "letter current incorrectText"
+  const classes = current ? ['letter', 'current'] : ['letter'];
   if (letter.extra) {
     classes.push('incorrectText', 'extra');
   } else if (letter.status === 'correct') {
@@ -47,7 +49,6 @@ function letterClassName(letter: LetterModel, current: boolean, ended: boolean):
     // legacy endGame(): every letter that is neither correctText nor incorrectText becomes incorrectText
     if (ended) classes.push('incorrectText');
   }
-  if (current) classes.push('current');
   return classes.join(' ');
 }
 

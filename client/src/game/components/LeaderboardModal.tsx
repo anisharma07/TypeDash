@@ -17,7 +17,7 @@ function RankCards({ entries, joinId }: { entries: LeaderboardEntry[]; joinId: n
           <img src={`/images/avatars/${p.userAvatar}.png`} alt="user-avatar" className="leaderboard-avatar" />
           <p className="rank-player-name">
             {p.username}
-            <span className="player-user-id">#{p.joinId}</span>
+            <span className="player-user-id">{`#${p.joinId}`}</span>
           </p>
           <p className="rank-player-wpm">{p.Highscore} wpm</p>
           <img src={`/images/${p.device}.png`} alt="device" className="device-icon" />

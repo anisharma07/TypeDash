@@ -92,7 +92,7 @@ Perfect for production and easy deployment with all dependencies included. View 
 ```bash
 # Clone the repository
 git clone https://github.com/anisharma07/TypeDash
-cd Type-Dash
+cd TypeDash
 
 # Start with Docker (includes MongoDB)
 chmod +x scripts/start.sh
@@ -110,14 +110,14 @@ Best for development and customization. See [DEVSETUP.md](DEVSETUP.md) for detai
 ```bash
 # Clone the repository
 git clone https://github.com/anisharma07/TypeDash
-cd Type-Dash
+cd TypeDash
 
 # Install server dependencies, then install + build the React client
 npm install
 npm run build
 
-# Configure environment (.env file)
-MONGODB_URI=mongodb://localhost:27017/TypeDash
+# Configure environment (creates the .env file the server reads)
+echo 'MONGODB_URI=mongodb://localhost:27017/TypeDash' > .env
 
 # Start the application (serves client/dist)
 npm start
@@ -136,7 +136,7 @@ npm start
 
 **For Manual Setup:**
 
-- Node.js 22.12 or newer (required by the client toolchain: Vite 8 and Vitest)
+- Node.js 22.13 or newer (22 LTS or 24; required by the client toolchain: Vite 8, Vitest and jsdom. Node 23 is not supported by the test runner)
 - npm or yarn
 - MongoDB (local or Atlas)
 - Git

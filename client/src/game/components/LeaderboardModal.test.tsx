@@ -53,6 +53,11 @@ describe('LeaderboardModal', () => {
     expect(names[0].textContent).toBe(`${XSS}#101`);
     expect(names[0].querySelector('img')).toBeNull();
     expect(names[0].querySelector('.player-user-id')?.textContent).toBe('#101');
+    // legacy rendered "#<id>" as ONE text node; React's `#{id}` made two, which widens the paragraph by 1/64 px
+    // and moves the glyph anti-aliasing of the id (visible as a few differing pixels in screenshot diffs)
+    expect(names[0].querySelector('.player-user-id')?.childNodes).toHaveLength(1);
+    // and the name itself is a single text node in front of the span
+    expect(Array.from(names[0].childNodes).filter((n) => n.nodeType === Node.TEXT_NODE)).toHaveLength(1);
     expect((window as unknown as { __pwned?: number }).__pwned).toBeUndefined();
     const cards = container.querySelectorAll('.player-rankings-easy .rank-card');
     expect(cards[0]).not.toHaveClass('me-rank-card');

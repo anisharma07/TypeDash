@@ -8,7 +8,7 @@ Before setting up TypeDash, ensure you have the following installed on your syst
 
 ### Required Software
 
-- **Node.js** (22.12 or newer; required by the React/Vite client toolchain)
+- **Node.js** (22.13 or newer: 22 LTS or 24; required by the React/Vite client toolchain. Node 23 is not supported by the test runner)
 
   - Download from [nodejs.org](https://nodejs.org/)
   - Verify installation: `node --version` and `npm --version`
@@ -163,6 +163,10 @@ npm run client:dev
 Open `http://localhost:5173`. Vite proxies `/socket.io` and `/get-users-leaderboard`
 to the Node server on port 2360, so the Node server must be running.
 
+`npm run dev` restarts the server when `app.js`, anything in `utils/` or `.env` changes (and only then, so
+rebuilding the client does not restart it). Extra arguments go straight to Vite, for example
+`npm run client:dev -- --port 5174 --strictPort`.
+
 **Production-style (single process on port 2360):**
 
 ```bash
@@ -268,13 +272,13 @@ npm install
 
 #### 3. Port Already in Use
 
-**Error**: `EADDRINUSE: address already in use :::3000`
+**Error**: `EADDRINUSE: address already in use :::2360`
 
 **Solutions**:
 
 ```bash
-# Find process using port 3000
-lsof -ti:3000
+# Find process using port 2360 (the default; use your PORT if you set one)
+lsof -ti:2360
 
 # Kill the process
 kill -9 <process-id>
