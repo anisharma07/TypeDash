@@ -3,19 +3,17 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { build } from 'vite';
+import { THEMES } from './theme/theme';
 
 /**
- * The legacy stylesheets are reused byte-for-byte, so the production build must not change what they mean.
- * Regression guard for a real bug: Vite's default CSS minifier (lightningcss) dropped the standard
- * `backdrop-filter` whenever the source listed it before `-webkit-backdrop-filter` (no glass blur in
- * Chromium/Firefox, and the key-hint images that use the blurred panels as containing block jumped to the
- * page corner) and rewrote the invalid `gap: 1` into a real `gap: 1px`.
+ * The production CSS must ship what the source says: every theme's token block (selected at runtime by
+ * data-theme, so nothing in the markup references them and a minifier or purger could drop them), the
+ * OKLCH values as written, and the typing area's fixed metrics, which useTypingCaret's scrolling depends on.
  */
 describe('production CSS build', () => {
   const root = resolve(import.meta.dirname, '..');
   let outDir = '';
   let built = '';
-  let source = '';
 
   beforeAll(async () => {
     outDir = mkdtempSync(join(tmpdir(), 'typedash-css-'));
@@ -25,31 +23,23 @@ describe('production CSS build', () => {
       .filter((name) => name.endsWith('.css'))
       .map((name) => readFileSync(join(assets, name), 'utf8'))
       .join('\n');
-    source = readdirSync(join(root, 'src/styles'))
-      .filter((name) => name.endsWith('.css'))
-      .map((name) => readFileSync(join(root, 'src/styles', name), 'utf8'))
-      .join('\n');
   }, 60_000);
 
   afterAll(() => rmSync(outDir, { recursive: true, force: true }));
 
-  const count = (text: string, pattern: RegExp) => (text.match(pattern) ?? []).length;
-
-  it('keeps every standard backdrop-filter declaration next to its -webkit- twin', () => {
-    const standard = /(?<![-\w])backdrop-filter\s*:/g;
-    const prefixed = /-webkit-backdrop-filter\s*:/g;
-    expect(count(source, standard)).toBeGreaterThan(0);
-    expect(count(built, standard)).toBe(count(source, standard));
-    expect(count(built, prefixed)).toBe(count(source, prefixed));
+  it('ships a token block for every theme', () => {
+    for (const theme of THEMES) {
+      expect(built, theme.slug).toMatch(new RegExp(`\\[data-theme=["']?${theme.slug}["']?\\]`));
+    }
   });
 
-  it('does not turn the legacy invalid unitless "gap: 1" into a working gap', () => {
-    expect(source).toMatch(/gap:\s*1\s*;/);
-    expect(built).toMatch(/gap:\s*1\s*;/);
-    expect(built).not.toMatch(/gap:\s*1px/);
+  it('keeps theme colours as authored', () => {
+    expect(built).toContain('--color-paper: oklch(12.5% 0.012 150)'); // terminal
+    expect(built).toContain('--color-accent: oklch(81% 0.19 133)'); // dash
   });
 
-  it('keeps the external Google Fonts imports', () => {
-    expect(count(built, /@import\s+(url\()?["']?https:\/\/fonts\.googleapis\.com/g)).toBeGreaterThan(0);
+  it('keeps the typing metrics the caret relies on', () => {
+    expect(built).toMatch(/height:\s*108\.951px/);
+    expect(built).toMatch(/line-height:\s*36\.317px/);
   });
 });

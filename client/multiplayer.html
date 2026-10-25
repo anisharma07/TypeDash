@@ -2,9 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=yes" />
-    <title>Type Dash | Speed typing game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TypeDash | Race</title>
     <link rel="icon" href="/images/favicon.ico" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Apply the saved theme before first paint (src/theme/theme.ts owns the key). -->
+    <script>
+      try {
+        var theme = localStorage.getItem('typedash:theme');
+        if (theme) document.documentElement.dataset.theme = theme;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

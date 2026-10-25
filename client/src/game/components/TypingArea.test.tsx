@@ -151,22 +151,26 @@ afterEach(() => {
 /* ---------- markup ---------- */
 
 describe('markup', () => {
-  it('reproduces the legacy .container structure and order', () => {
+  it('renders the .container structure the caret maths relies on', () => {
     const { q, container } = setup({ timeUp: false, enabled: false });
     const root = q('.container');
     expect(container.firstElementChild).toBe(root);
+    // #cursor is positioned against .container, so it must stay a direct child next to the text viewport
     expect(Array.from(root.children).map((c) => c.id || c.className)).toEqual([
-      'time-up-warn hidden',
       'timerClass',
-      'caps-lock hidden',
+      'typing-badges',
       'cursor',
       'text-content-div',
       'input-field',
     ]);
-    expect(q('.time-up-warn > p')).toHaveTextContent('Time Up!');
-    expect(q('.timerClass > h3 > strong.stopwatch')).toHaveTextContent('01:00');
+    expect(Array.from(q('.typing-badges').children).map((c) => c.className)).toEqual([
+      'time-up-warn hidden',
+      'caps-lock hidden',
+    ]);
+    expect(q('.time-up-warn > p')).toHaveTextContent('Time up');
+    expect(q('.timerClass > strong.stopwatch')).toHaveTextContent('01:00');
     expect(q('.caps-lock > p > i.bx.bxs-lock-alt')).toBeInTheDocument();
-    expect(q('.caps-lock p')).toHaveTextContent('Caps Lock');
+    expect(q('.caps-lock p')).toHaveTextContent('Caps Lock is on');
     expect(q('#cursor')).toHaveClass('hidden');
     const div = q('.text-content-div');
     expect(Array.from(div.children).map((c) => c.id || c.className)).toEqual(['dummy-cursor hidden', 'text-content']);
@@ -185,19 +189,19 @@ describe('markup', () => {
   it('shows the placeholder sentence as plain text when there is no quote', () => {
     const { q } = setup({ text: null });
     const p = q('#text-content');
-    expect(p).toHaveTextContent('Press Enter or Click on Get Ready button to start....');
+    expect(p).toHaveTextContent('Press Enter or click Get Ready. The race starts when every player is ready.');
     expect(p.children).toHaveLength(0);
     expect(createEngineMock).not.toHaveBeenCalled();
   });
 
-  it('time-up banner, stopwatch label and running colour follow the props', () => {
+  it('time-up banner, stopwatch label and running style follow the props', () => {
     const { q, rerender } = setup({ timerRunning: false, timeLabel: '00:42' });
     expect(q('.stopwatch')).toHaveTextContent('00:42');
-    expect(q('.stopwatch').style.color).toBe('');
+    expect(q('.stopwatch')).not.toHaveClass('stopwatch--running');
     rerender({ timerRunning: true });
-    expect(q('.stopwatch').style.color).toBe('rgb(226, 183, 20)');
+    expect(q('.stopwatch')).toHaveClass('stopwatch--running');
     rerender({ timerRunning: false });
-    expect(q('.stopwatch').style.color).toBe('');
+    expect(q('.stopwatch')).not.toHaveClass('stopwatch--running');
     expect(q('.time-up-warn')).toHaveClass('hidden');
     rerender({ timeUp: true });
     expect(q('.time-up-warn')).not.toHaveClass('hidden');

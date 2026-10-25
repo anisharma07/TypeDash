@@ -15,7 +15,7 @@ const getLoader = () => (loaderModule ??= import('./particlesLoader'));
  * canvas, and the discarded first container's late destroy() would remove the
  * canvas the second one is drawing on (no stars in dev on about half the loads).
  */
-export function Particles() {
+export function Particles({ theme }: { theme?: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,7 +45,8 @@ export function Particles() {
       container = undefined;
       element.remove();
     };
-  }, []);
+    // The stars take the theme's ink colour when they load, so a new theme reloads them.
+  }, [theme]);
 
   return <div id="tsparticles" ref={ref} />;
 }

@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import type { ChangeEvent } from 'react';
 import { Particles } from '../components/Particles';
+import { PlayersOnline, usePlayersOnline } from '../components/PlayersOnline';
+import type { PresenceSocket } from '../components/PlayersOnline';
+import { SettingsDialog } from '../components/SettingsDialog';
 import { AVATARS } from '../data/avatars';
+import { createSocket as createRealSocket } from '../lib/socket';
+import { useSettings } from '../theme/useSettings';
 import {
   avatarHint,
   detectDevice,
@@ -11,7 +16,13 @@ import {
   randomAvatarIndex,
 } from './helpers';
 
-export function HomePage() {
+export interface HomePageProps {
+  /** for tests; defaults to the real socket.io connection */
+  createSocket?: () => PresenceSocket;
+}
+
+export function HomePage({ createSocket = createRealSocket }: HomePageProps) {
+  const playersOnline = usePlayersOnline(createSocket);
   const [avatar, setAvatar] = useState<number>(() => randomAvatarIndex());
   const [username, setUsername] = useState('');
   const [isGirl, setIsGirl] = useState(false);
@@ -19,6 +30,8 @@ export function HomePage() {
   const [warning, setWarning] = useState(false);
   // Legacy: modal starts hidden (static class) and is forced hidden on mobile.
   const [modalHidden, setModalHidden] = useState(true);
+  const { settings, update } = useSettings();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const contactRef = useRef<HTMLInputElement>(null);
@@ -87,106 +100,149 @@ export function HomePage() {
 
   return (
     <>
-      <img src="images/left-hand.png" alt="left" className="left-hand" />
-      <img src="images/right-hand.png" alt="right" className="right-hand" />
-      <div className="background">
-        <div></div>
-        <div></div>
-      </div>
-
-      <Particles />
-      <nav className="navbar">
-        <img src="images/typing.png" alt="LOGO" className="typing-logo" />
-        <img src="images/type-on-phone.png" alt="type-on-phone" className="typing-on-phone" />
-      </nav>
-      <form id="entry-form" action="multiplayer.html" method="get" className="">
-        <div className="avatar-div focus-glassmorphism ">
-          <img src="./images/arrows.png" alt="arrow-keys" className="arrows-indicator" />
-          <div className="select-avatar">
-            <p>SELECT AVATAR</p>
-          </div>
-          <div className="avatars">
-            {AVATARS.map((name, i) => (
-              <label key={name}>
-                <input
-                  type="radio"
-                  name="image"
-                  value={name}
-                  id={name}
-                  className="avatar-select-input"
-                  checked={avatar === i}
-                  onChange={() => setAvatar(i)}
-                />
-                <img
-                  src={`images/avatars/${name}.png`}
-                  alt={name}
-                  className="avatars-select-image"
-                />
-              </label>
-            ))}
-          </div>
+      {settings.starfield && <Particles theme={settings.theme} />}
+      <header className="topbar">
+        <span className="wordmark">
+          TypeDash<span className="wordmark-caret" aria-hidden="true"></span>
+        </span>
+        <div className="topbar-actions">
+          <PlayersOnline count={playersOnline} />
+          <button
+            type="button"
+            className="icon-btn settings-button"
+            aria-label="Settings"
+            onClick={() => setSettingsOpen(true)}
+          >
+            <i className="bx bx-cog" aria-hidden="true"></i>
+          </button>
         </div>
+      </header>
 
-        <div className="username-identity glassmorphism">
-          <img src="images/tab.png" alt="tab" className="focus-tab" />
-          <div className="details-box">
-            <div className="details">
-              <p className={warning ? 'max-char-warning' : 'max-char-warning hidden'}>
-                maximum 10 characters allowed!
-              </p>
-              {/* The legacy markup had whitespace between these inline siblings; it renders as real spaces
-                  (JSX drops it), so each gap is restored with {' '} to keep the row pixel-identical. */}
-              <label htmlFor="username">Username:</label>{' '}
-              <input type="hidden" name="Device" value={device} className="Device-logged-in" />{' '}
+      <main className="home-main">
+        <section className="home-intro" aria-labelledby="home-title">
+          <h1 id="home-title">Race your friends, word by word.</h1>
+          <p className="lede">Everyone types the same text at once. Your best speed stays on the leaderboard.</p>
+          <ol className="steps">
+            <li>Pick a ship and a name.</li>
+            <li>
+              Press <kbd>Enter</kbd> when you are ready.
+            </li>
+            <li>Type the text before anyone else.</li>
+          </ol>
+
+          <div className="returning">
+            <label htmlFor="user-join-id">Raced before? Log in with your Player ID.</label>
+            <form action="multiplayer.html" method="get" id="log-in">
               <input
-                type="text"
-                id="username"
-                name="username"
-                maxLength={10}
-                minLength={3}
-                autoComplete="off"
-                placeholder="nick-name/choose random"
+                type="number"
+                name="join-id"
+                id="user-join-id"
+                className="text-input"
+                placeholder="6-digit ID"
+                max={999999}
+                min={100000}
                 required
-                ref={usernameRef}
-                value={username}
-                onChange={onUsernameChange}
-              />{' '}
-              <img src="images/alt.png" alt="alt" className="alt-key" />{' '}
-              <img src="images/ctrl.png" alt="alt" className="ctrl-key" />{' '}
-              <img
-                src="images/randomdice.png"
-                alt="dice-roll"
-                className="random-name-dice"
-                onClick={rollName}
-              />{' '}
-              <label className="ui-switch">
+                ref={joinIdRef}
+              />
+              <button type="submit" className="btn btn-secondary">
+                Log in
+              </button>
+              <kbd title="Jump to the Player ID box">`</kbd>
+            </form>
+          </div>
+        </section>
+
+        <form id="entry-form" action="multiplayer.html" method="get" className="join-card">
+          <fieldset className="avatar-div">
+            <legend className="field-head">
+              Your ship
+              <span className="key-hints" aria-hidden="true">
+                <kbd>←</kbd>
+                <kbd>↑</kbd>
+                <kbd>↓</kbd>
+                <kbd>→</kbd>
+              </span>
+            </legend>
+            <div className="avatars">
+              {AVATARS.map((name, i) => (
+                <label key={name}>
+                  <input
+                    type="radio"
+                    name="image"
+                    value={name}
+                    id={name}
+                    className="avatar-select-input visually-hidden"
+                    checked={avatar === i}
+                    onChange={() => setAvatar(i)}
+                  />
+                  <img src={`images/avatars/${name}.png`} alt={name} className="avatars-select-image" />
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="username-identity">
+            <div className="details">
+              <div className="field-head">
+                <label htmlFor="username">Name</label>
+                <p className={warning ? 'max-char-warning' : 'max-char-warning hidden'} role="status">
+                  10 characters at most
+                </p>
+              </div>
+              <input type="hidden" name="Device" value={device} className="Device-logged-in" />
+              <div className="name-row">
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  className="text-input"
+                  maxLength={10}
+                  minLength={3}
+                  autoComplete="off"
+                  placeholder="Nickname, or roll one"
+                  required
+                  ref={usernameRef}
+                  value={username}
+                  onChange={onUsernameChange}
+                />
+                <button
+                  type="button"
+                  className="icon-btn random-name-dice"
+                  aria-label="Roll a random name"
+                  onClick={rollName}
+                >
+                  <i className="bx bx-dice-5" aria-hidden="true"></i>
+                </button>
+                <kbd title="Roll a random name">Alt</kbd>
+              </div>
+              <label className="switch-row name-list">
+                <span>
+                  <span className="switch-label">Girl names</span>
+                  <span className="switch-hint">
+                    Random names come from this list <kbd>Ctrl</kbd>
+                  </span>
+                </span>
                 <input
                   type="checkbox"
                   id="name-toggler"
+                  role="switch"
+                  className="switch"
                   checked={isGirl}
                   onChange={(e) => setIsGirl(e.target.checked)}
                 />
-                <div className="slider">
-                  <div className="circle"></div>
-                </div>
               </label>
             </div>
 
+            {/* The contact field and its rules are switched off (always hidden, sent as "none"), as in the original. */}
             <div className="details contact-page">
-              <img
-                src="images/modal-binding.png"
-                alt="modalbind"
-                className="rules-modal-bind hidden"
-              />
-
               <div className={modalHidden ? 'rules-modal hidden' : 'rules-modal'}>
                 <h2>Exciting prize for winners</h2>
                 <ul>
                   <li>To participate, fill the contact else type none.</li>
                   <li>Format: Name/contact.</li>
                   <li>
-                    contact may be email id, phone no., insta id, or any other social media
-                    through which we can reach you out.
+                    contact may be email id, phone no., insta id, or any other social media through which we can
+                    reach you out.
                   </li>
                 </ul>
               </div>
@@ -204,46 +260,39 @@ export function HomePage() {
                 required
                 ref={contactRef}
               />
-              <img
-                src="images/question-mark.png"
-                alt="question-mark"
+              <button
+                type="button"
                 className="question-mark hidden"
+                aria-label="Contact rules"
                 onClick={() => setModalHidden((h) => !h)}
-              />
+              >
+                ?
+              </button>
             </div>
           </div>
-        </div>
-        <div className="btn-div">
-          <button className="submitBtn glassmorphism">
-            JOIN GAME
-            <img src="images/enter.png" alt="enter" className="enter-key" />
-          </button>
-        </div>
-      </form>
 
-      <footer className="foo">
-        <form action="multiplayer.html" method="get" id="log-in">
-          <input
-            type="number"
-            name="join-id"
-            id="user-join-id"
-            placeholder="Enter user-id"
-            max={999999}
-            min={100000}
-            required
-            ref={joinIdRef}
-          />{' '}
-          <img src="images/log-in-bind.png" alt="loginbind" className="log-in-bind" />{' '}
-          <button type="submit">LOG IN</button>
+          <div className="btn-div">
+            <button className="submitBtn btn btn-primary">
+              Join the race
+              <i className="bx bx-right-arrow-alt" aria-hidden="true"></i>
+            </button>
+            <kbd>Enter</kbd>
+          </div>
         </form>
-        <div className="glitch-wrapper">
-          <div className="glitch" data-glitch="copyright">
-            copyright
-          </div>{' '}
-          <i className="bx bx-copyright"></i>{' '}
-          <p className="current-year">{new Date().getFullYear()}</p>
-        </div>
+      </main>
+
+      <footer className="foo site-footer">
+        <p>
+          © <span className="current-year">{new Date().getFullYear()}</span> TypeDash
+        </p>
       </footer>
+
+      <SettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        settings={settings}
+        onChange={update}
+      />
     </>
   );
 }

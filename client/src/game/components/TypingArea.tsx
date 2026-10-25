@@ -7,16 +7,14 @@ import { useTypingInput } from '../hooks/useTypingInput';
 import type { TypingAreaProps } from '../types';
 import { withHidden } from './classes';
 
-const PLACEHOLDER = 'Press Enter or Click on Get Ready button to start....';
+const PLACEHOLDER = 'Press Enter or click Get Ready. The race starts when every player is ready.';
 
 /**
  * The legacy quote letters are the non-standard `<letter>` element. Decision:
  * render them as the valid custom element `<ty-letter>`.
- * - No stylesheet targets the `letter` tag; everything hangs off `.letter`.
- * - Both `<letter>` (HTMLUnknownElement) and `<ty-letter>` (undefined custom
- *   element) are plain `display: inline` elements with no UA styles, so layout
- *   (and the getBoundingClientRect maths of the caret) is identical.
- * - A `<span>` would NOT be identical: game.css has a global `span { position: relative }`.
+ * - No stylesheet targets the tag; everything hangs off `.letter`.
+ * - `<ty-letter>` (an undefined custom element) is a plain `display: inline`
+ *   element with no UA styles, which the caret's getBoundingClientRect maths expects.
  * - React warns "The tag <letter> is unrecognized in this browser" for `letter`
  *   but not for hyphenated custom element names.
  */
@@ -25,13 +23,10 @@ const LETTER_TAG = 'ty-letter';
 /**
  * Same decision for the words. Legacy puts `div.word` inside `p#text-content`
  * (innerHTML allows it), but React warns "<div> cannot be a descendant of <p>".
- * `.word` is `display: inline-block` and no rule targets `div` (a `span` would
- * add `position: relative`), so the hyphenated custom element
- * `<ty-word class="word">` renders identically and keeps the `p#text-content` wrapper.
+ * `.word` is `display: inline-block`, so the hyphenated custom element
+ * `<ty-word class="word">` renders the same and keeps the `p#text-content` wrapper.
  */
 const WORD_TAG = 'ty-word';
-
-const STOPWATCH_RUNNING_COLOR = '#e2b714';
 
 /** Legacy class strings: letter | letter current | letter correctText | letter incorrectText | letter missed | letter incorrectText extra */
 function letterClassName(letter: LetterModel, current: boolean, ended: boolean): string {
@@ -116,23 +111,20 @@ function TypingRound({
 
   return (
     <div className="container" ref={containerRef}>
-      <div className={withHidden('time-up-warn', !timeUp)}>
-        <p>Time Up!</p>
-      </div>
       <div className="timerClass">
-        <h3>
-          <strong
-            className="stopwatch"
-            style={timerRunning ? { color: STOPWATCH_RUNNING_COLOR } : undefined}
-          >
-            {timeLabel}
-          </strong>
-        </h3>
+        <strong className={timerRunning ? 'stopwatch stopwatch--running' : 'stopwatch'} aria-label="Time left">
+          {timeLabel}
+        </strong>
       </div>
-      <div className={withHidden('caps-lock', !input.capsLock)}>
-        <p>
-          <i className="bx bxs-lock-alt"></i> Caps Lock
-        </p>
+      <div className="typing-badges">
+        <div className={withHidden('time-up-warn', !timeUp)} role="status">
+          <p>Time up</p>
+        </div>
+        <div className={withHidden('caps-lock', !input.capsLock)} role="status">
+          <p>
+            <i className="bx bxs-lock-alt" aria-hidden="true"></i> Caps Lock is on
+          </p>
+        </div>
       </div>
       <div id="cursor" ref={cursorRef} className={withHidden('', !input.started || ended)}></div>
       <div

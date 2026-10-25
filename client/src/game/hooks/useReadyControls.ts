@@ -1,14 +1,13 @@
 import { useCallback, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
 import type { Difficulty } from '../../types/socket';
 import type { Emit } from './useGameSocket';
 
-/** idle = never clicked (stylesheet colours), ready = "Ready", notReady = "Get Ready" with the dark inline colours */
-type ReadyPhase = 'idle' | 'ready' | 'notReady';
+/** idle = never clicked, ready = "Ready", notReady = "Get Ready" again after un-readying (styled per phase) */
+export type ReadyPhase = 'idle' | 'ready' | 'notReady';
 
 export interface ReadyControls {
   label: 'Get Ready' | 'Ready';
-  style: CSSProperties | undefined;
+  phase: ReadyPhase;
   difficulty: Difficulty;
   setDifficulty: (difficulty: Difficulty) => void;
   /** Alt key: flips the select */
@@ -18,9 +17,6 @@ export interface ReadyControls {
   /** legacy notReady() without the leaderboard side effect (used by 'start game') */
   notReady: () => void;
 }
-
-const READY_STYLE: CSSProperties = { background: 'rgb(0 82 3)', color: 'white' };
-const NOT_READY_STYLE: CSSProperties = { background: '#1c1c1c', color: 'white' };
 
 export function useReadyControls(emit: Emit, setLeaderboardOpen: (open: boolean) => void): ReadyControls {
   const [phase, setPhaseState] = useState<ReadyPhase>('idle');
@@ -65,7 +61,7 @@ export function useReadyControls(emit: Emit, setLeaderboardOpen: (open: boolean)
 
   return {
     label: phase === 'ready' ? 'Ready' : 'Get Ready',
-    style: phase === 'ready' ? READY_STYLE : phase === 'notReady' ? NOT_READY_STYLE : undefined,
+    phase,
     difficulty,
     setDifficulty,
     toggleDifficulty,

@@ -1,0 +1,311 @@
+/* Home page: the introduction and the returning-player login beside the join card. */
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: start;
+  gap: var(--space-2xl);
+  width: min(1180px, 100% - 2 * var(--space-lg));
+  margin: 0 auto;
+  padding: var(--space-2xl) 0;
+}
+
+.home-intro h1 {
+  font-size: var(--text-hero);
+  max-width: 13ch;
+}
+
+.lede {
+  margin-top: var(--space-md);
+  max-width: 40ch;
+  color: var(--color-ink-2);
+  font-size: var(--text-lg);
+}
+
+.steps {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-ink-2);
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: var(--rule-hair) solid var(--color-rule-2);
+  border-radius: 50%;
+  color: var(--color-ink);
+  font-family: var(--font-outlier);
+  font-size: var(--text-sm);
+}
+
+.steps kbd {
+  margin: 0 var(--space-3xs);
+}
+
+.returning {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.returning label {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+#log-in {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+#log-in .text-input {
+  width: 160px;
+  font-family: var(--font-outlier);
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+}
+
+#log-in .text-input::-webkit-inner-spin-button,
+#log-in .text-input::-webkit-outer-spin-button {
+  appearance: none;
+}
+
+/* ---- The join card ---- */
+
+.join-card {
+  display: grid;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-card);
+  background-color: var(--color-paper-2);
+  box-shadow: var(--shadow-card);
+}
+
+.avatar-div {
+  min-width: 0;
+  border: 0;
+}
+
+.field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+/* A legend only takes block layout when floated. */
+legend.field-head {
+  float: left;
+  width: 100%;
+}
+
+legend.field-head + * {
+  clear: both;
+}
+
+.key-hints {
+  display: inline-flex;
+  gap: var(--space-2xs);
+}
+
+/* Two rows of ships, 8 over 7 with the second row offset half a ship: the arrow keys move along this grid. */
+.avatars {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: var(--space-sm) var(--space-xs);
+}
+
+.avatars > label {
+  grid-column: span 2;
+}
+
+.avatars > label:nth-child(9) {
+  grid-column: 2 / span 2;
+}
+
+.avatars-select-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 14%;
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: 50%;
+  background-color: var(--color-paper);
+  cursor: pointer;
+  transition:
+    transform var(--dur-short) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.avatars-select-image:hover {
+  border-color: var(--color-muted);
+  transform: translateY(-2px);
+}
+
+.avatar-select-input:checked + .avatars-select-image {
+  border: 2px solid var(--color-accent);
+  background-color: var(--color-accent-wash);
+  transform: scale(1.08);
+}
+
+.avatar-select-input:focus-visible + .avatars-select-image {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.username-identity {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.details label[for="username"] {
+  color: var(--color-ink-2);
+}
+
+.max-char-warning {
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.name-row .text-input {
+  flex: 1;
+}
+
+.random-name-dice {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+}
+
+.name-list {
+  margin-top: var(--space-md);
+}
+
+.name-list .switch-hint kbd {
+  margin-left: var(--space-2xs);
+}
+
+.rules-modal {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-control);
+  background-color: var(--color-paper);
+}
+
+.btn-div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.submitBtn {
+  flex: 1;
+  min-height: 56px;
+  font-size: var(--text-lg);
+}
+
+.site-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+@media (width <= 960px) {
+  .home-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-xl);
+    padding: var(--space-xl) 0;
+  }
+
+  .home-intro h1 {
+    max-width: 18ch;
+  }
+
+  /* One column: headline and lede, then the join card, then the steps and the login. */
+  .home-intro {
+    display: contents;
+  }
+
+  .home-intro h1,
+  .lede {
+    order: 0;
+  }
+
+  .lede {
+    margin-top: calc(var(--space-md) - var(--space-xl));
+  }
+
+  .join-card {
+    order: 1;
+  }
+
+  .steps,
+  .returning {
+    order: 2;
+    margin-top: 0;
+  }
+}
+
+@media (width <= 600px) {
+  .home-main {
+    width: calc(100% - 2 * var(--space-md));
+    padding: var(--space-lg) 0;
+  }
+
+  .topbar {
+    padding: 0 var(--space-md);
+  }
+
+  .join-card {
+    padding: var(--space-lg) var(--space-md);
+    gap: var(--space-lg);
+  }
+
+  .avatars {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .avatars > label,
+  .avatars > label:nth-child(9) {
+    grid-column: auto;
+  }
+}

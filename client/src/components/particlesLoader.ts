@@ -12,7 +12,28 @@ function init(): Promise<void> {
   return ready;
 }
 
+/**
+ * The current theme's ink as an rgb() string. Theme colours are OKLCH, which tsParticles cannot parse, so the
+ * browser converts it by painting one pixel.
+ */
+function starColor(): string {
+  const value = getComputedStyle(document.documentElement).getPropertyValue('--color-ink').trim();
+  const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  if (!value || !ctx) return '#ffffff';
+  ctx.fillStyle = value;
+  ctx.fillRect(0, 0, 1, 1);
+  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
 export async function loadParticles(element: HTMLElement, id: string): Promise<Container | undefined> {
   await init();
-  return tsParticles.load({ id, element, options: particlesOptions });
+  const options = {
+    ...particlesOptions,
+    particles: {
+      ...particlesOptions.particles,
+      paint: { fill: { enable: true, color: { value: starColor() } } },
+    },
+  };
+  return tsParticles.load({ id, element, options });
 }

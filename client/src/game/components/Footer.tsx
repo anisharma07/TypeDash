@@ -1,51 +1,48 @@
-import type { CSSProperties } from 'react';
+import type { ReadyPhase } from '../hooks/useReadyControls';
 import { withHidden } from './classes';
 
 interface FooterProps {
-  onToggleLeaderboard: () => void;
   leaveMatchVisible: boolean;
   onLeaveMatch: () => void;
   playerStatusVisible: boolean;
   readyLabel: string;
-  readyStyle: CSSProperties | undefined;
+  readyPhase: ReadyPhase;
   onReady: () => void;
   insufficientPlayers: boolean;
 }
 
-/** Legacy `footer.foo`: leaderboard button, leave match, ready controls and the glitch copyright. */
+/** The action bar: the ready button between rounds, "leave match" during one. */
 export function Footer({
-  onToggleLeaderboard,
   leaveMatchVisible,
   onLeaveMatch,
   playerStatusVisible,
   readyLabel,
-  readyStyle,
+  readyPhase,
   onReady,
   insufficientPlayers,
 }: FooterProps) {
   return (
     <footer className="foo">
-      <div className="leaderboard-button" onClick={onToggleLeaderboard}>
-        <img src="/images/log-in-bind.png" alt="leaderboard" className="leaderboard-bind keyss" />
-        <img src="/images/leaderboardIcon.png" alt="" className="leaderboard-logo" />
-      </div>
-      <button className={withHidden('leave-match', !leaveMatchVisible)} onClick={onLeaveMatch}>
-        Leave match
-      </button>
       <div className={withHidden('player-status', !playerStatusVisible)}>
-        <img src="/images/enter.png" alt="enter" className="ready-btn-bind keyss" />
-        <button className="ready-btn" style={readyStyle} onClick={onReady}>
+        <button type="button" className={`ready-btn btn ready-btn--${readyPhase}`} onClick={onReady}>
+          {readyPhase === 'ready' && <i className="bx bx-check" aria-hidden="true"></i>}
           {readyLabel}
         </button>
-        <div className={withHidden('insuff-player', !insufficientPlayers)}>invite 1 more player</div>
-      </div>
-      <div className="glitch-wrapper">
-        <div className="glitch" data-glitch="copyright">
-          copyright
+        <kbd>Enter</kbd>
+        <div className={withHidden('insuff-player', !insufficientPlayers)} role="status">
+          Invite one more player to start
         </div>
-        <i className="bx bx-copyright"></i>
-        <p className="current-year">{new Date().getFullYear()}</p>
       </div>
+      <button
+        type="button"
+        className={withHidden('leave-match btn btn-secondary', !leaveMatchVisible)}
+        onClick={onLeaveMatch}
+      >
+        Leave match
+      </button>
+      <p className="copyright">
+        © <span className="current-year">{new Date().getFullYear()}</span> TypeDash
+      </p>
     </footer>
   );
 }

@@ -5,24 +5,38 @@ import type { Boards, LeaderboardEntry } from '../../lib/leaderboard';
 
 const EMPTY: Boards = { easy: [], medium: [] };
 
+const DEVICE = {
+  computer: { icon: 'bx-laptop', label: 'Laptop' },
+  iphone: { icon: 'bx-mobile', label: 'Mobile' },
+} as const;
+
 function RankCards({ entries, joinId }: { entries: LeaderboardEntry[]; joinId: number | null }) {
+  if (entries.length === 0) {
+    return <li className="rank-empty">No scores yet. Finish a race to get on the board.</li>;
+  }
   return (
     <>
-      {entries.map((p, i) => (
-        <div
-          key={`${p.joinId}-${p.device}-${i}`}
-          // legacy used loose ==; compare numerically
-          className={`rank-card ${joinId !== null && Number(p.joinId) === Number(joinId) ? 'me-rank-card' : ''}`}
-        >
-          <img src={`/images/avatars/${p.userAvatar}.png`} alt="user-avatar" className="leaderboard-avatar" />
-          <p className="rank-player-name">
-            {p.username}
-            <span className="player-user-id">{`#${p.joinId}`}</span>
-          </p>
-          <p className="rank-player-wpm">{p.Highscore} wpm</p>
-          <img src={`/images/${p.device}.png`} alt="device" className="device-icon" />
-        </div>
-      ))}
+      {entries.map((p, i) => {
+        const device = DEVICE[p.device];
+        return (
+          <li
+            key={`${p.joinId}-${p.device}-${i}`}
+            // legacy used loose ==; compare numerically
+            className={`rank-card ${joinId !== null && Number(p.joinId) === Number(joinId) ? 'me-rank-card' : ''}`}
+          >
+            <span className="rank-position">{i + 1}</span>
+            <img src={`/images/avatars/${p.userAvatar}.png`} alt="" className="leaderboard-avatar" />
+            <p className="rank-player-name">
+              {p.username}
+              <span className="player-user-id">{`#${p.joinId}`}</span>
+            </p>
+            <p className="rank-player-wpm">
+              <strong>{p.Highscore}</strong> wpm
+            </p>
+            <i className={`device-icon bx ${device.icon}`} role="img" aria-label={device.label} title={device.label}></i>
+          </li>
+        );
+      })}
     </>
   );
 }
@@ -57,38 +71,47 @@ export function LeaderboardModal({
   const easyActive = level === 'easy';
 
   return (
-    <div className={`leader-board-menu${open ? '' : ' hidden'}`}>
+    <aside className={`leader-board-menu${open ? '' : ' hidden'}`} aria-labelledby="leaderboard-title">
       <div className="ranking-section leaderboard-sections">
         <div className="leaderboard-heading">
-          <button className="close-leaderboard" onClick={onClose}>
-            &times;
+          <h2 id="leaderboard-title">Leaderboard</h2>
+          <button type="button" className="icon-btn filter-logo" aria-label="Refresh leaderboard" onClick={onRefresh}>
+            <i className="bx bx-refresh" aria-hidden="true"></i>
           </button>
-          <h1>LeaderBoard</h1>
-          <img src="/images/filter-white.png" alt="filter" className="filter-logo" onClick={onRefresh} />
-          <img src="/images/ctrl.png" alt="refresh" className="refresh-bind keyss" />
+          <button type="button" className="icon-btn close-leaderboard" aria-label="Close leaderboard" onClick={onClose}>
+            <i className="bx bx-x" aria-hidden="true"></i>
+          </button>
         </div>
-        <div className="level-change">
-          <img src="/images/tab.png" alt="tab-bind" className="level-change-bind keyss" />
-          <div
+        <div className="level-change" role="tablist" aria-label="Level">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={easyActive}
             className={`easy${easyActive ? ' leaderboard-level-chosen' : ''}`}
             onClick={() => onLevelChange('easy')}
           >
-            <p>Easy</p>
-          </div>
-          <div
+            Easy
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={!easyActive}
             className={`medium${easyActive ? '' : ' leaderboard-level-chosen'}`}
             onClick={() => onLevelChange('medium')}
           >
-            <p>Medium</p>
-          </div>
+            Medium
+          </button>
         </div>
-        <div className={`player-rankings-easy${easyActive ? '' : ' hidden'}`}>
+        <ol className={`player-rankings-easy${easyActive ? '' : ' hidden'}`}>
           <RankCards entries={boards.easy} joinId={joinId} />
-        </div>
-        <div className={`player-rankings-medium${easyActive ? ' hidden' : ''}`}>
+        </ol>
+        <ol className={`player-rankings-medium${easyActive ? ' hidden' : ''}`}>
           <RankCards entries={boards.medium} joinId={joinId} />
-        </div>
+        </ol>
+        <p className="leaderboard-keys">
+          <kbd>Tab</kbd> level <kbd>Ctrl</kbd> refresh <kbd>`</kbd> close
+        </p>
       </div>
-    </div>
+    </aside>
   );
 }
