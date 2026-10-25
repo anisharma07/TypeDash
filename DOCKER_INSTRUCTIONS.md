@@ -5,7 +5,8 @@ This document provides instructions for running Type Dash using Docker.
 ## Prerequisites
 
 - Docker installed on your system
-- Docker Compose installed on your system
+- Docker Compose v2, the `docker compose` plugin that ships with Docker Desktop and current Docker Engine packages
+  (the scripts also fall back to the legacy `docker-compose` v1 binary)
 
 ## Running the Application with Docker
 
@@ -43,7 +44,7 @@ cd /path/to/TypeDash
 
 ```bash
 cd /path/to/TypeDash
-docker-compose --profile local-db up -d
+docker compose --profile local-db up -d
 ```
 
 ### Option 2: With MongoDB Atlas (Cloud Database)
@@ -56,7 +57,7 @@ docker-compose --profile local-db up -d
 
 ```bash
 cd /path/to/TypeDash
-docker-compose --profile atlas up -d
+docker compose --profile atlas up -d
 ```
 
 ### General Usage
@@ -68,14 +69,17 @@ docker-compose --profile atlas up -d
 2. View logs:
 
 ```bash
-docker-compose logs -f
+docker compose --profile local-db logs -f   # or --profile atlas
 ```
 
 3. Stop the application:
 
 ```bash
-docker-compose down
+docker compose --profile local-db down      # or --profile atlas
 ```
+
+Pass the same `--profile` you started with. Every service in `docker-compose.yml` belongs to a profile, and Compose
+ignores services whose profile isn't enabled, so a bare `docker compose logs` or `down` does nothing.
 
 ## How the Image Is Built
 
@@ -87,12 +91,12 @@ The Node server serves the built client on port 2360.
 `docker-compose.yml` bind-mounts the repo into the container, so it shadows
 `node_modules` and `client/dist` with anonymous volumes to keep what the image built.
 Because of this, **source changes to the client are not picked up by a restart**:
-rebuild with `docker-compose --profile <profile> up --build -V -d` (`-V` renews the
+rebuild with `docker compose --profile <profile> up --build -V -d` (`-V` renews the
 anonymous volumes so a stale `client/dist` is not reused; `./scripts/start.sh` already does this).
 
 Two side effects of those anonymous volumes:
 
-- Every `-V` rebuild leaves the previous run's anonymous volumes behind (`docker-compose down` does not remove
+- Every `-V` rebuild leaves the previous run's anonymous volumes behind (`docker compose down` does not remove
   them without `-v`, and `down -v` would also delete the MongoDB data volume, so do not use it casually). List the
   leftovers with `docker volume ls -f dangling=true` and remove the ones you recognise with `docker volume rm <name>`;
   avoid a blanket `docker volume prune` on older Docker versions, which can also remove unused *named* volumes.
@@ -122,7 +126,7 @@ The application uses the following environment variables:
    ```
 6. **Run with Atlas** (without local MongoDB):
    ```bash
-   docker-compose --profile atlas up -d
+   docker compose --profile atlas up -d
    ```
 
 ### Using Local Database vs Cloud Database
@@ -131,14 +135,14 @@ The application uses the following environment variables:
 
 ```bash
 # Starts both app and local MongoDB
-docker-compose --profile local-db up -d
+docker compose --profile local-db up -d
 ```
 
 **For MongoDB Atlas (cloud database):**
 
 ```bash
 # Only starts the app, uses Atlas for database
-docker-compose --profile atlas up -d
+docker compose --profile atlas up -d
 ```
 
 ## Data Persistence
@@ -167,8 +171,7 @@ which rebuilds the image and renews the anonymous volumes:
 Or rebuild manually:
 
 ```bash
-docker-compose build
-docker-compose --profile local-db up -V -d  # for local DB
+docker compose --profile local-db up --build -V -d  # for local DB
 # OR
-docker-compose --profile atlas up -V -d     # for Atlas
+docker compose --profile atlas up --build -V -d     # for Atlas
 ```

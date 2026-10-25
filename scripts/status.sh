@@ -13,6 +13,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# cd to the repo root and pick the Compose command ($COMPOSE)
+source "$(dirname "$0")/compose.sh"
+
 # Function to check service health
 check_service_health() {
     local url=$1
@@ -29,8 +32,8 @@ check_service_health() {
 
 # Check Docker containers
 echo "🐳 Docker Containers:"
-if docker ps --filter "name=typedash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -q "typedash"; then
-    docker ps --filter "name=typedash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+if [ -n "$($COMPOSE --profile local-db --profile atlas ps -q 2>/dev/null)" ]; then
+    $COMPOSE --profile local-db --profile atlas ps
 else
     echo -e "${RED}❌ No Type Dash containers running${NC}"
 fi
@@ -55,7 +58,7 @@ if [ -f ".env" ] && grep -q "mongodb+srv" .env 2>/dev/null; then
 else
     echo -e "${BLUE}Local MongoDB${NC}"
     echo -n "   Status: "
-    if docker exec typedash_mongo_1 mongosh --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+    if $COMPOSE --profile local-db exec -T mongo mongosh --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
         echo -e "${GREEN}Running${NC}"
     else
         echo -e "${RED}Not responding${NC}"
@@ -81,7 +84,7 @@ fi
 
 echo ""
 echo "📋 Quick Commands:"
-echo "  • View logs:   docker-compose logs -f"
+echo "  • View logs:   $COMPOSE --profile local-db --profile atlas logs -f"
 echo "  • Restart:     ./scripts/stop.sh && ./scripts/start.sh"
 echo "  • Reconfigure: ./scripts/start.sh --setup"
 echo "  • Stop:        ./scripts/stop.sh"
