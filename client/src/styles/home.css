@@ -98,6 +98,8 @@ body {
 
 .join-card {
   display: grid;
+  /* One column that never grows past the card; without it the name input's default width widens the card on phones. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xl);
   padding: var(--space-xl);
   border: var(--rule-hair) solid var(--color-rule);
@@ -185,6 +187,7 @@ legend.field-head + * {
 
 .username-identity {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-md);
 }
 
@@ -206,6 +209,7 @@ legend.field-head + * {
 
 .name-row .text-input {
   flex: 1;
+  min-width: 0;
 }
 
 .random-name-dice {

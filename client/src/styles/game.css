@@ -374,6 +374,12 @@
   overflow: hidden;
 }
 
+/* Between races the box holds the hint, not a quote: let it grow so narrow screens show all of it. */
+.text-content-div:not(:has(.word)) {
+  height: auto;
+  min-height: 108.951px;
+}
+
 #text-content {
   font-family: var(--font-body);
   font-size: 24px;
@@ -740,6 +746,7 @@
   .userProfile {
     padding-left: 0;
     border-left: 0;
+    overflow: hidden;
   }
 
   .middle-container,

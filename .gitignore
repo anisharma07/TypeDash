@@ -41,3 +41,8 @@ next-env.d.ts
 client/node_modules
 client/dist
 client/coverage
+# Playwright
+client/.e2e-dist
+client/test-results
+client/playwright-report
+client/blob-report

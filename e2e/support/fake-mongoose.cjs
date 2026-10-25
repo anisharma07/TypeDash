@@ -5,7 +5,11 @@
  * MongoDB. Implements only what TypeDash uses: Schema (nested defaults), model(),
  * new Model(data).save(), find(filter, projection).sort(), updateOne/updateMany
  * with {$lt} filters and {$set} dotted paths, JSON serialisation.
+ *
+ * FAKE_DB_FAIL=1 makes every call reject, like a database that is down, to check the server survives it.
  */
+const FAIL = process.env.FAKE_DB_FAIL === '1';
+const down = () => Promise.reject(new Error('fake database is down (FAKE_DB_FAIL=1)'));
 const Module = require('module');
 
 const isLeaf = (d) => d && typeof d === 'object' && typeof d.type === 'function';
@@ -61,6 +65,7 @@ function model(name, schema) {
       this._id = `${store.length + 1}-${Math.random().toString(16).slice(2, 10)}`;
     }
     save() {
+      if (FAIL) return down();
       store.push(this);
       return Promise.resolve(this);
     }
@@ -73,6 +78,7 @@ function model(name, schema) {
     then: (res, rej) => Promise.resolve(docs).then(res, rej),
   });
   Doc.find = (filter, projection) => {
+    if (FAIL) return { sort: () => ({ then: (r, rej) => down().then(r, rej) }), then: (r, rej) => down().then(r, rej) };
     let docs;
     try {
       docs = store.filter((d) => matches(d, filter));
@@ -85,6 +91,7 @@ function model(name, schema) {
     return query(docs);
   };
   const update = (many) => async (filter, upd) => {
+    if (FAIL) return down();
     let n = 0;
     for (const d of store) {
       if (!matches(d, filter)) continue;
@@ -100,10 +107,10 @@ function model(name, schema) {
   return Doc;
 }
 
-const fake = { Schema, model, connect: async () => fake, connection: { on() {} } };
+const fake = { Schema, model, connect: async () => (FAIL ? down() : fake), connection: { on() {} } };
 const origLoad = Module._load;
 Module._load = function (request, ...rest) {
   if (request === 'mongoose') return fake;
   return origLoad.call(this, request, ...rest);
 };
-console.log('[fake-mongoose] in-memory Racer store active');
+console.log(`[fake-mongoose] in-memory Racer store active${FAIL ? ' (FAKE_DB_FAIL: every call fails)' : ''}`);

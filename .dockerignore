@@ -7,3 +7,7 @@ client/dist
 legacy
 e2e
 docs
+client/.e2e-dist
+client/test-results
+client/playwright-report
+client/e2e

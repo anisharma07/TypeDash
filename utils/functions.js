@@ -3,8 +3,12 @@ const checkIfunique = [];
 require("dotenv").config();
 const mongoURI = process.env.MONGODB_URI;
 const mongoose = require("mongoose");
-console.log("mongoURI", mongoURI);
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+// Never print the password: mongodb+srv://user:secret@host -> mongodb+srv://user:***@host
+console.log("mongoURI", String(mongoURI).replace(/\/\/([^:/@]+):[^@]*@/, "//$1:***@"));
+// A database that is down or misconfigured is logged; the server keeps running (races work, scores are not saved).
+mongoose
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .catch((err) => console.error("[error] MongoDB connection failed:", err && err.message ? err.message : err));
 
 const LeaderboardSchema = new mongoose.Schema({
   username: String,
@@ -44,7 +48,9 @@ async function setplayerIds() {
   const data = await Racer.find({}, "joinId");
   playerIds = data.map((player) => player.joinId);
 }
-setplayerIds();
+setplayerIds().catch((err) =>
+  console.error("[error] loading Player IDs:", err && err.message ? err.message : err)
+);
 
 function userJoin(id, username, wpm, avatar, userJoinId) {
   const user = {

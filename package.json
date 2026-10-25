@@ -10,7 +10,9 @@
     "client:dev": "npm --prefix client run dev --",
     "client:build": "npm --prefix client run build --",
     "build": "npm run client:install && npm run client:build",
-    "test": "npm --prefix client test"
+    "test": "npm --prefix client test",
+    "e2e": "npm --prefix client run e2e --",
+    "screenshots": "npm --prefix client run screenshots --"
   },
   "repository": {
     "type": "git",
