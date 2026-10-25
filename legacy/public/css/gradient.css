@@ -1,0 +1,38 @@
+.background {
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  /* background: linear-gradient(to right, #00010d, #00010d); */
+  display: flex;
+  flex-grow: 1;
+  z-index: -1000;
+}
+
+.background div {
+  position: absolute;
+  border-radius: 100%;
+  height: 0;
+  filter: blur(240vw);
+  opacity: 0.4;
+}
+
+.background div:nth-child(1) {
+  background: linear-gradient(132deg, #fafafa 0%, #ffffff 100%);
+  width: 70%;
+  padding-top: 70%;
+  left: 99%;
+  top: 100%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.background div:nth-child(2) {
+  background: linear-gradient(132deg, #ffffff 0%, #ffffff 100%);
+  width: 57%;
+  padding-top: 57%;
+  left: 0%;
+  top: 0%;
+  transform: translateX(-50%) translateY(-50%);
+}

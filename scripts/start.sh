@@ -171,7 +171,7 @@ setup_database() {
 }
 
 # Main execution
-echo "🛠️  Building and starting containers..."
+echo "🛠️  Building (React client + server image) and starting containers..."
 
 # Check if this is first run or if user wants to reconfigure
 if [ "$1" = "--setup" ] || [ "$1" = "-s" ]; then
@@ -187,7 +187,7 @@ fi
 # Start containers based on configuration
 if [ "$USE_ATLAS" = true ]; then
     echo "🚀 Starting with cloud database..."
-    if docker-compose --profile atlas up --build -d; then
+    if docker-compose --profile atlas up --build -V -d; then
         echo -e "${GREEN}✅ Docker containers started successfully (Atlas mode)${NC}"
     else
         echo -e "${RED}❌ Failed to start Docker containers${NC}"
@@ -195,7 +195,7 @@ if [ "$USE_ATLAS" = true ]; then
     fi
 else
     echo "🚀 Starting with local database..."
-    if docker-compose --profile local-db up --build -d; then
+    if docker-compose --profile local-db up --build -V -d; then
         echo -e "${GREEN}✅ Docker containers started successfully (Local mode)${NC}"
     else
         echo -e "${RED}❌ Failed to start Docker containers${NC}"

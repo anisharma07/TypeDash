@@ -1,0 +1,275 @@
+/* CSS */
+
+@import url("https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap");
+:root {
+  --bgColor: #00010d;
+  --textPrimary: #72b01d;
+  --textSecondary: #666;
+  --primaryColor: #d7dedc;
+  --redIncorrect: #6b0504;
+  --redBackground: #db6c79;
+}
+.player-status {
+  position: absolute;
+  top: 0px;
+  left: 32%;
+  z-index: 1;
+}
+.leave-match {
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  z-index: 1;
+}
+.leave-match:hover {
+  cursor: pointer;
+}
+
+.ready-btn-bind {
+  position: absolute;
+  top: 0px;
+  left: -46px;
+  width: 40px;
+}
+.ready-btn {
+  align-items: center;
+  appearance: none;
+  background-color: #1c1c1c;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "JetBrains Mono", monospace;
+  height: 40px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow 0.15s, transform 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow, transform;
+  font-size: 18px;
+}
+.ready-btn:focus {
+  box-shadow: #d6d6e7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+}
+
+.ready-btn:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+.ready-btn:active {
+  box-shadow: #d6d6e7 0 3px 7px inset;
+  transform: translateY(2px);
+}
+.right-planet {
+  position: fixed;
+  top: 0;
+  right: -100px;
+  height: 100vh;
+  height: 100svh;
+  z-index: -10;
+}
+
+.left-planet {
+  position: fixed;
+  top: 0;
+  left: -100px;
+  height: 100vh;
+  height: 100svh;
+  z-index: -10;
+}
+.countdown {
+  font-family: "Roboto Mono";
+  font-size: 24px;
+  color: #ffffff;
+  position: absolute;
+  top: 12px;
+  left: 101px;
+}
+.countdown-over {
+  font-family: "Roboto Mono";
+  font-size: 24px;
+  color: var(--textPrimary);
+  position: absolute;
+  top: 12px;
+  left: 101px;
+}
+.countdown-number {
+  color: var(--textPrimary);
+}
+
+.progress-space {
+  position: relative;
+  width: 100%;
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 14px;
+  border-top-left-radius: 14px;
+  z-index: -1;
+  text-align: center;
+  margin: auto;
+  user-select: none;
+  background-color: #2f3233;
+  background-image: url("/images/grains.png");
+}
+.square1 {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 30px;
+}
+.square2 {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 63px;
+}
+.progress-bar-container {
+  height: 90%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+/* Basic Progress Bar Styling */
+.progress-bar {
+  width: 80%;
+  position: relative;
+}
+.avatar-path {
+  width: 100%;
+}
+.progress-path {
+  width: 90%;
+}
+.user-avatar {
+  position: absolute;
+  top: -18px;
+  left: 0%;
+  width: 60px;
+  transition: left 0.2s ease;
+}
+.player-name {
+  position: absolute;
+  top: -54px;
+  left: -10px;
+  background-color: #f1f1f133;
+  backdrop-filter: blur(10px);
+  padding: 3px;
+  border-radius: 8px;
+}
+.player-you {
+  background-color: #0088ffcc;
+}
+.insuff-player {
+  position: absolute;
+  top: 0;
+  left: 108px;
+  width: 168px;
+  padding: 6px;
+  border-radius: 20px;
+  background-color: #330f0f47;
+}
+.status-circle {
+  position: absolute;
+  top: 0px;
+  left: -88px;
+  z-index: 0;
+  width: 24px;
+  height: 24px;
+  background-color: #ff4848;
+  border-radius: 50%;
+}
+.user-curr-wpm {
+  font-family: "Saira Stencil One", sans-serif;
+  position: absolute;
+  top: 1px;
+  right: -95px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: black;
+  padding: 2px;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+}
+.user-rank-wpm {
+  position: absolute;
+  top: -21px;
+  right: -92px;
+  font-family: "Roboto Mono", monospace;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+}
+@media (width<=600px) {
+  .dropdown {
+    flex-direction: column;
+  }
+
+  .countdown,
+  .countdown-over {
+    font-size: 18px;
+  }
+  .keyss {
+    display: none;
+  }
+  .leader-board-menu {
+    width: 98%;
+    position: absolute;
+    top: 0px;
+    left: 1%;
+    z-index: 10000;
+  }
+  .hero-container {
+    width: 98%;
+    border: none;
+    justify-content: center;
+  }
+  .progress-space {
+    display: none;
+  }
+  .details {
+    position: absolute;
+  }
+  .showWpm {
+    top: -133px;
+    left: 122px;
+  }
+  .chk_accuracy {
+    top: -66px;
+    left: 2px;
+  }
+  .HighScore {
+    top: -66px;
+    right: -16px;
+  }
+  .matches-section {
+    height: 50%;
+  }
+  .ranking-section {
+    height: 100%;
+  }
+}
+.hidden {
+  display: none;
+}

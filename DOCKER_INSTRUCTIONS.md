@@ -14,14 +14,14 @@ This document provides instructions for running Type Dash using Docker.
 **Easiest way - Automated start with auto-detection:**
 
 ```bash
-cd /path/to/Type-Dash
+cd /path/to/TypeDash
 ./scripts/start.sh
 ```
 
 **Interactive setup for database configuration:**
 
 ```bash
-cd /path/to/Type-Dash
+cd /path/to/TypeDash
 ./scripts/start.sh --setup
 ```
 
@@ -42,7 +42,7 @@ cd /path/to/Type-Dash
 1. Build and start the containers with local database:
 
 ```bash
-cd /path/to/Type-Dash
+cd /path/to/TypeDash
 docker-compose --profile local-db up -d
 ```
 
@@ -55,34 +55,56 @@ docker-compose --profile local-db up -d
 3. Start only the application (no local database):
 
 ```bash
-cd /path/to/Type-Dash
+cd /path/to/TypeDash
 docker-compose --profile atlas up -d
 ```
 
 ### General Usage
 
-2. Access the application:
+1. Access the application:
 
    - Open your browser and navigate to http://localhost:2360
 
-3. View logs:
+2. View logs:
 
 ```bash
 docker-compose logs -f
 ```
 
-4. Stop the application:
+3. Stop the application:
 
 ```bash
 docker-compose down
 ```
+
+## How the Image Is Built
+
+The `Dockerfile` is multi-stage: stage 1 (`node:22`) builds the React client
+(`npm ci` + `npm run build` in `client/`); stage 2 (`node:22-alpine`) installs the
+server's production dependencies and copies the server sources plus `client/dist`.
+The Node server serves the built client on port 2360.
+
+`docker-compose.yml` bind-mounts the repo into the container, so it shadows
+`node_modules` and `client/dist` with anonymous volumes to keep what the image built.
+Because of this, **source changes to the client are not picked up by a restart**:
+rebuild with `docker-compose --profile <profile> up --build -V -d` (`-V` renews the
+anonymous volumes so a stale `client/dist` is not reused; `./scripts/start.sh` already does this).
+
+Two side effects of those anonymous volumes:
+
+- Every `-V` rebuild leaves the previous run's anonymous volumes behind (`docker-compose down` does not remove
+  them without `-v`, and `down -v` would also delete the MongoDB data volume, so do not use it casually). List the
+  leftovers with `docker volume ls -f dangling=true` and remove the ones you recognise with `docker volume rm <name>`;
+  avoid a blanket `docker volume prune` on older Docker versions, which can also remove unused *named* volumes.
+- Docker creates an empty, root-owned `client/dist` directory in your working copy as the mount point. A
+  `client/dist` you built on the host is hidden inside the container by the image's own build.
 
 ## Environment Variables
 
 The application uses the following environment variables:
 
 - `MONGODB_URI`: MongoDB connection URI. Options:
-  - **Local Docker Database (default)**: `mongodb://mongo:27017/type-dash`
+  - **Local Docker Database (default)**: `mongodb://mongo:27017/TypeDash`
   - **MongoDB Atlas (cloud)**: `mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority`
 
 ### Setting up MongoDB Atlas (Cloud Database)
@@ -96,7 +118,7 @@ The application uses the following environment variables:
    ```
 5. **Edit `.env` file** and replace the MONGODB_URI:
    ```
-   MONGODB_URI=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/type-dash?retryWrites=true&w=majority
+   MONGODB_URI=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/TypeDash?retryWrites=true&w=majority
    ```
 6. **Run with Atlas** (without local MongoDB):
    ```bash
@@ -134,7 +156,8 @@ MongoDB data is persisted in a Docker volume named `mongo-data`. This ensures th
 
 ## Rebuilding the Application
 
-If you make changes to your code, the easiest way is to restart:
+If you make changes to your code (server or React client), the easiest way is to restart,
+which rebuilds the image and renews the anonymous volumes:
 
 ```bash
 ./scripts/stop.sh
@@ -145,7 +168,7 @@ Or rebuild manually:
 
 ```bash
 docker-compose build
-docker-compose --profile local-db up -d  # for local DB
+docker-compose --profile local-db up -V -d  # for local DB
 # OR
-docker-compose --profile atlas up -d     # for Atlas
+docker-compose --profile atlas up -V -d     # for Atlas
 ```

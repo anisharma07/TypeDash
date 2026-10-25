@@ -25,7 +25,23 @@ const {
 const { quotes, getRandomWords, getQuote } = require("./utils/quotes.js");
 const { BoyNames, GirlNames } = require("./utils/usernames.js");
 
-app.use(express.static(path.join(__dirname, "public")));
+// The React frontend is built by Vite into client/dist (run: npm run build).
+const clientDist = path.join(__dirname, "client", "dist");
+const clientBuilt = require("fs").existsSync(path.join(clientDist, "index.html"));
+if (!clientBuilt) {
+  console.warn(
+    "WARNING: client/dist/index.html not found. The React frontend is not built. Run: npm run build"
+  );
+  app.get("/", (req, res) => {
+    res
+      .status(503)
+      .type("text/plain")
+      .send(
+        "Type Dash frontend is not built yet.\nRun: npm run build\nThen restart the server (or use the Vite dev server: npm run client:dev)."
+      );
+  });
+}
+app.use(express.static(clientDist));
 app.get("/get-users-leaderboard", async (req, res) => {
   const players = await Racer.find().sort({ highscore: -1 });
   res.json(players);
