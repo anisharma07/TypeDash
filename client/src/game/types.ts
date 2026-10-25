@@ -31,7 +31,7 @@ export interface TypingAreaProps {
   ended: boolean;
   /** Stopwatch text, "MM:SS". */
   timeLabel: string;
-  /** Stopwatch uses the "running" colour (#e2b714) while true. */
+  /** Stopwatch is drawn in the "running" style while true. */
   timerRunning: boolean;
   /** Show the legacy "Time Up!" banner. */
   timeUp: boolean;

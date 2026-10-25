@@ -1,7 +1,7 @@
 /**
- * Typed contract of the existing Socket.IO protocol (see /app.js).
- * The server is NOT changed by the React conversion: every event name and
- * payload below mirrors what app.js emits and listens to today.
+ * Typed contract of the Socket.IO protocol (see /app.js). Every event name and
+ * payload below mirrors what app.js emits and listens to. The React conversion
+ * kept the legacy protocol; 'players online' was added later for the online badge.
  */
 
 /** 0 = "easy" (random words), 1 = "medium" (quote). Mirrors server `levelOfQuote`. */
@@ -56,6 +56,8 @@ export interface ServerToClientEvents {
   'end game on request': () => void;
   'set player rank': (payload: { playerId: string; rank: number }) => void;
   'update user leaderboard': () => void;
+  /** players in the game; sent on connect and whenever someone joins or leaves */
+  'players online': (count: number) => void;
 }
 
 export interface ClientToServerEvents {

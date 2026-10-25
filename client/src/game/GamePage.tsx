@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Particles } from '../components/Particles';
-import { Backdrop } from './components/Backdrop';
+import { SettingsDialog } from '../components/SettingsDialog';
+import { useSettings } from '../theme/useSettings';
 import { Footer } from './components/Footer';
 import { LeaderboardModal } from './components/LeaderboardModal';
 import { Navbar } from './components/Navbar';
@@ -26,17 +28,23 @@ export function GamePage({
   const game = useGame({ search, createSocket, confirmLeave, navigate });
   const { round, leaderboard, ready, race } = game;
   const { view } = round;
+  const { settings, update } = useSettings();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Legacy overlay / transparent-overlay only ever receive `hidden`; clicking them closes the modals.
   return (
-    <>
-      <div className="leave-match-pop-up"></div>
+    <div className="game">
       <WrongIdNotice visible={game.wrongId} />
-      <Backdrop />
-      <Particles />
-      <Navbar username={game.profile.username} userId={game.profile.userId} onLeave={game.leaveGame} />
+      {settings.starfield && <Particles theme={settings.theme} />}
+      <Navbar
+        username={game.profile.username}
+        userId={game.profile.userId}
+        playersOnline={game.playersOnline}
+        onLeave={game.leaveGame}
+        onToggleLeaderboard={leaderboard.toggle}
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
 
-      <div className="middle-container">
+      <main className={`middle-container${leaderboard.open ? ' with-board' : ''}`}>
         <LeaderboardModal
           open={leaderboard.open}
           onClose={leaderboard.close}
@@ -61,21 +69,24 @@ export function GamePage({
             onComplete={round.onComplete}
           />
         </div>
-      </div>
+      </main>
 
       <Footer
-        onToggleLeaderboard={leaderboard.toggle}
         leaveMatchVisible={view.leaveMatchVisible}
         onLeaveMatch={game.leaveMatchRequest}
         playerStatusVisible={view.playerStatusVisible}
         readyLabel={ready.label}
-        readyStyle={ready.style}
+        readyPhase={ready.phase}
         onReady={ready.onReadyBtnClick}
         insufficientPlayers={game.insufficientPlayers}
       />
 
-      <div className="overlay hidden" onClick={leaderboard.close}></div>
-      <div className="transparent-overlay hidden" onClick={leaderboard.close}></div>
-    </>
+      <SettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        settings={settings}
+        onChange={update}
+      />
+    </div>
   );
 }

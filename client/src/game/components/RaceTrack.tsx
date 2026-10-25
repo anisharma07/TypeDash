@@ -12,6 +12,24 @@ function LaneRow({ lane }: { lane: Lane }) {
         id={`${id}status`}
         style={{ backgroundColor: lane.statusColor }}
       ></div>
+      <div id={`${id}nameid`} className={`player-name ${lane.isSelf ? 'player-you' : ''}`}>
+        {/* user controlled: rendered as plain text only */}
+        <p>{lane.isSelf ? 'YOU' : lane.username}</p>
+      </div>
+      <div className="lane-track">
+        <div className="lane-run">
+          <img
+            src={`/images/avatars/${lane.avatar}.png`}
+            alt="avatar"
+            id={`${id}avatar`}
+            className="user-avatar"
+            style={{ left: lane.left }}
+          />
+        </div>
+      </div>
+      <div className="user-curr-wpm" id={`${id}wpm`}>
+        {lane.wpmLabel}
+      </div>
       <div id={`${id}user-rank`} className="user-rank-wpm">
         {place && (
           <>
@@ -20,52 +38,36 @@ function LaneRow({ lane }: { lane: Lane }) {
           </>
         )}
       </div>
-      <div className="user-curr-wpm" id={`${id}wpm`}>
-        {lane.wpmLabel}
-      </div>
-      <div id={`${id}nameid`} className={`player-name ${lane.isSelf ? 'player-you' : ''}`}>
-        {/* user controlled: rendered as plain text only */}
-        <p>{lane.isSelf ? 'YOU' : lane.username}</p>
-      </div>
-      <img
-        src={`/images/avatars/${lane.avatar}.png`}
-        alt="avatar"
-        id={`${id}avatar`}
-        className="user-avatar"
-        style={{ left: lane.left }}
-      />
-      <img src="/images/dividerFigma@4x.png" alt="divider" className="progress-path" />
     </div>
   );
 }
 
-/** The static bar of the legacy HTML, shown until the first 'add user progress'. */
+/** Shown until the first 'add user progress'. */
 function PlaceholderLane() {
   return (
     <div id="progress-bar" className="progress-bar">
       <div className="status-circle"></div>
-      <div className="player-name">
-        <p>YOU:</p>
+      <div className="player-name player-you">
+        <p>YOU</p>
       </div>
-      <div className="avatar-path">
-        <img src="/images/dividerFigma.png" alt="divider" className="progress-path" />
-      </div>
-      <div className="user-curr-wpm" id="${user.id}wpm">
-        0 wpm
-      </div>
+      <div className="lane-track"></div>
+      <div className="user-curr-wpm">0 wpm</div>
+      <div className="user-rank-wpm"></div>
     </div>
   );
 }
 
-/** Legacy `.progress-space`: the race track with one lane per player, current player first. */
+/** The race track: one lane per player, current player first; the avatar's `left` is the player's progress. */
 export function RaceTrack({ lanes }: { lanes: Lane[] | null }) {
   return (
-    <div className="progress-space">
-      <img src="/images/squares.png" alt="square1" className="square1" />
-      <img src="/images/squares.png" alt="square2" className="square2" />
+    <section className="progress-space" aria-label="Race track">
       <div className="progress-bar-container">
-        {lanes === null ? <PlaceholderLane /> : lanes.map((lane) => <LaneRow key={`${lane.generation}:${lane.id}`} lane={lane} />)}
+        {lanes === null ? (
+          <PlaceholderLane />
+        ) : (
+          lanes.map((lane) => <LaneRow key={`${lane.generation}:${lane.id}`} lane={lane} />)
+        )}
       </div>
-    </div>
+    </section>
   );
 }

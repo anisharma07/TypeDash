@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   # Main application service (for cloud/Atlas database)
   app:

@@ -63,8 +63,19 @@ describe('LeaderboardModal', () => {
     expect(cards[0]).not.toHaveClass('me-rank-card');
     expect(cards[1]).toHaveClass('me-rank-card');
     expect(cards[0].querySelector('.rank-player-wpm')?.textContent).toBe('80 wpm');
-    expect(cards[0].querySelector('.device-icon')).toHaveAttribute('src', '/images/computer.png');
-    expect(cards[1].querySelector('.device-icon')).toHaveAttribute('src', '/images/iphone.png');
+    expect(cards[0].querySelector('.device-icon')).toHaveAttribute('aria-label', 'Laptop');
+    expect(cards[0].querySelector('.device-icon')).toHaveClass('bx-laptop');
+    expect(cards[1].querySelector('.device-icon')).toHaveAttribute('aria-label', 'Mobile');
+    expect(cards[1].querySelector('.device-icon')).toHaveClass('bx-mobile');
+    expect(cards[0].querySelector('.rank-position')?.textContent).toBe('1');
+  });
+
+  it('shows an empty-state row instead of an empty list', async () => {
+    fetchMock.mockImplementation(() => ok([row(101, 0, 80, 0, 0, 'ann')])); // no Medium scores
+    const { container } = setup();
+    await waitFor(() => expect(container.querySelectorAll('.player-rankings-easy .rank-card')).toHaveLength(1));
+    expect(container.querySelector('.player-rankings-easy .rank-empty')).toBeNull();
+    expect(container.querySelector('.player-rankings-medium .rank-empty')?.textContent).toMatch(/No scores yet/);
   });
 
   it('hides when closed and calls onClose', async () => {
@@ -72,7 +83,7 @@ describe('LeaderboardModal', () => {
     expect(container.querySelector('.leader-board-menu')).toHaveClass('hidden');
     rerender(<LeaderboardModal {...props} open />);
     expect(container.querySelector('.leader-board-menu')).not.toHaveClass('hidden');
-    await userEvent.click(screen.getByRole('button'));
+    await userEvent.click(screen.getByRole('button', { name: 'Close leaderboard' }));
     expect(props.onClose).toHaveBeenCalledTimes(1);
   });
 

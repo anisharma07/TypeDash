@@ -160,12 +160,12 @@ describe('socket lifecycle', () => {
   });
 
   it.each(['abc', '12abc', '1.5', '-3', ' 7', '1e3'])(
-    'never sends the invalid join-id %j to the server and shows the WRONG JOIN ID notice',
+    'never sends the invalid join-id %j to the server and shows the wrong-id notice',
     (raw) => {
       const s = setup(`?join-id=${encodeURIComponent(raw)}`);
       expect(s.f.sockets.flatMap((x) => x.emitted)).toEqual([]);
       expect(isHidden('.wrong-id')).toBe(false);
-      expect(screen.getByText('WRONG JOIN ID....')).toBeInTheDocument();
+      expect(screen.getByText('That Player ID does not exist')).toBeInTheDocument();
       // Enter must not reach a server that has no such player
       key('Enter');
       expect(s.f.sockets.flatMap((x) => x.emitted)).toEqual([]);
@@ -186,6 +186,17 @@ describe('socket lifecycle', () => {
     s.unmount();
     expect(socket.listenerCount()).toBe(0);
     expect(socket.disconnectCalls).toBe(1);
+  });
+
+  it('shows the online count from the server once it arrives and keeps it current', () => {
+    const s = setup();
+    expect(document.querySelector('.players-online')).toBeNull();
+    s.server('players online', 3);
+    expect(q('nav.navbar .players-online .players-online-count').textContent).toBe('3');
+    expect(q('.players-online')).toHaveAttribute('role', 'status');
+    expect(q('.players-online')).toHaveAttribute('title', '3 players online');
+    s.server('players online', 1);
+    expect(q('.players-online')).toHaveAttribute('title', '1 player online');
   });
 
   it('shows the notice when the server rejects the id', () => {
@@ -249,7 +260,7 @@ describe('race track', () => {
   it('shows the static placeholder bar until the first lane update', () => {
     setup();
     expect(document.querySelectorAll('.progress-bar').length).toBe(1);
-    expect(q('.progress-bar .player-name').textContent).toBe('YOU:');
+    expect(q('.progress-bar .player-name').textContent).toBe('YOU');
   });
 
   it('renders the current player first, as YOU, with the others in server order', () => {
@@ -359,12 +370,12 @@ describe('race track', () => {
 });
 
 describe('insufficient players', () => {
-  it('shows "invite 1 more player" for 5 seconds', () => {
+  it('shows the invite notice for 5 seconds', () => {
     const s = setup();
     expect(isHidden('.insuff-player')).toBe(true);
     s.server('insufficient players');
     expect(isHidden('.insuff-player')).toBe(false);
-    expect(q('.insuff-player').textContent).toBe('invite 1 more player');
+    expect(q('.insuff-player').textContent).toBe('Invite one more player to start');
     s.tick(4999);
     expect(isHidden('.insuff-player')).toBe(false);
     s.tick(1);
@@ -377,11 +388,11 @@ describe('ready controls', () => {
     const s = setup();
     const btn = q('.ready-btn');
     expect(btn.textContent).toBe('Get Ready');
-    expect(btn.getAttribute('style')).toBeNull();
+    expect(btn).toHaveClass('ready-btn--idle');
     fireEvent.click(btn);
     expect(btn.textContent).toBe('Ready');
-    expect(btn.style.background).toBe('rgb(0, 82, 3)');
-    expect(btn.style.color).toBe('white');
+    expect(btn).toHaveClass('ready-btn--ready');
+    expect(btn).not.toHaveClass('ready-btn--idle');
     expect(s.socket().emitsOf('ready status')).toEqual([['easy']]);
     expect(board().open).toBe(false);
   });
@@ -391,7 +402,7 @@ describe('ready controls', () => {
     fireEvent.click(q('.ready-btn'));
     fireEvent.click(q('.ready-btn'));
     expect(q('.ready-btn').textContent).toBe('Get Ready');
-    expect(q('.ready-btn').style.background).toBe('rgb(28, 28, 28)');
+    expect(q('.ready-btn')).toHaveClass('ready-btn--notReady');
     expect(s.socket().emittedNames()).toEqual(['join', 'ready status', 'not ready']);
     expect(board().open).toBe(true);
   });
@@ -434,14 +445,14 @@ describe('key bindings (lobby)', () => {
     expect(no.navigate).not.toHaveBeenCalled();
   });
 
-  it('the leave-game icon asks for confirmation too', () => {
+  it('the leave-game button asks for confirmation too', () => {
     const s = setup();
-    fireEvent.click(screen.getByAltText('leave-game'));
+    fireEvent.click(screen.getByRole('button', { name: 'Leave game' }));
     expect(s.confirmLeave).toHaveBeenCalledTimes(1);
     expect(s.navigate).toHaveBeenCalledWith('/index.html');
   });
 
-  it('backtick toggles the leaderboard; the footer button too', () => {
+  it('backtick toggles the leaderboard; the top-bar button too', () => {
     setup();
     expect(board().open).toBe(true);
     key('`');
@@ -549,7 +560,7 @@ describe('round lifecycle', () => {
     s.tick(1000); // t = 10: value 0 + startMatchCountdown
     expect(isHidden('.countdown')).toBe(true);
     expect(isHidden('.countdown-over')).toBe(false);
-    expect(q('.countdown-over').textContent).toBe('start typing...');
+    expect(q('.countdown-over').textContent).toBe('Go, start typing');
     expect(green.style.transform).toBe('scale(1)');
     expect(red.style.backgroundColor).toBe('rgb(3, 202, 11)');
     expect(yellow.style.backgroundColor).toBe('rgb(3, 202, 11)');
@@ -792,36 +803,45 @@ describe('round lifecycle', () => {
 });
 
 describe('page chrome', () => {
-  it('keeps the legacy structure and class names the stylesheets rely on', () => {
+  it('renders the page structure and class names the stylesheet relies on', () => {
     setup();
     for (const selector of [
-      '.leave-match-pop-up',
-      '.wrong-id.hidden',
-      '.background-blend',
-      '.background > div',
-      'img.right-planet',
-      'img.left-planet.keyss',
+      '.game > .wrong-id.hidden',
+      '.game > nav.navbar.topbar .wordmark',
       'nav.navbar .userProfile .current-user-username',
-      'nav.navbar img.leave-game',
-      'img.leave-game-bind.keyss',
-      'img.type-dash.keyss',
-      '.middle-container .hero-container .progress-space .progress-bar-container',
+      'nav.navbar .userProfile .curr-user-id',
+      'nav.navbar button.leaderboard-button kbd',
+      'nav.navbar button.settings-button[aria-label="Settings"]',
+      'nav.navbar button.leave-game[aria-label="Leave game"] kbd',
+      '.game > main.middle-container .hero-container .progress-space .progress-bar-container',
       '.hero-container .timer .circles .red-circle',
       '.timer .countdown.hidden .countdown-number',
       '.timer .countdown-over.hidden',
       '.timer .showWpm.details.hidden #wordsPerMinute',
       '.timer .chk_accuracy.details.hidden #terminal-accuracy',
-      '.timer .dropdown #DifficultySelect',
-      'footer.foo .leaderboard-button img.leaderboard-bind.keyss',
-      'footer.foo button.leave-match.hidden',
+      '.timer .dropdown label[for="DifficultySelect"] + #DifficultySelect',
+      '.game > footer.foo button.leave-match.hidden',
       'footer.foo .player-status .ready-btn',
       'footer.foo .player-status .insuff-player.hidden',
-      'footer.foo .glitch-wrapper .glitch[data-glitch="copyright"]',
-      '.overlay.hidden',
-      '.transparent-overlay.hidden',
+      'footer.foo .copyright .current-year',
     ]) {
       expect(document.querySelector(selector), selector).not.toBeNull();
     }
+    // the legacy decoration (planets, gradient blobs, glitch text, key-hint images) is gone
+    expect(document.querySelector('.game img:not(.user-avatar):not(.leaderboard-avatar)')).toBeNull();
+  });
+
+  it('opens the settings dialog from the top bar and keeps lobby keys away from the page while it is open', () => {
+    const s = setup();
+    expect(screen.queryByRole('dialog')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const dialog = screen.getByRole('dialog', { name: 'Settings' });
+    // Escape and Enter inside the dialog close it / do nothing to the game instead of leaving or readying up
+    fireEvent.keyDown(document.activeElement ?? dialog, { key: 'Enter' });
+    expect(s.socket().emitsOf('ready status')).toEqual([]);
+    fireEvent.keyDown(document.activeElement ?? dialog, { key: 'Escape' });
+    expect(s.confirmLeave).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 
   it('renders the leave-match button hidden and the ready area visible before the first round', () => {

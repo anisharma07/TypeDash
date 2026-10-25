@@ -1,10 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 import { HomePage } from './HomePage';
 import { BoyNames, GirlNames } from '../data/names';
+import { createFakeSocketFactory } from '../test-utils/FakeSocket';
 import { navigateAvatar, pickRandomName, detectDevice, avatarHint } from './helpers';
+
+// The page opens a socket for the online count; never a real one in tests.
+vi.mock('../lib/socket', async () => {
+  const { FakeSocket } = await import('../test-utils/FakeSocket');
+  return { createSocket: () => new FakeSocket() };
+});
 
 const LEGACY_DOWN: Record<number, number> = {
   0: 8, 1: 8, 2: 9, 3: 10, 4: 11, 5: 12, 6: 13, 7: 14,
@@ -139,12 +146,12 @@ describe('HomePage', () => {
 
   it('dice rolls a name, question mark toggles modal, Tab and backtick move focus', () => {
     render(<HomePage />);
-    fireEvent.click(screen.getByAltText('dice-roll'));
+    fireEvent.click(screen.getByRole('button', { name: 'Roll a random name' }));
     expect(BoyNames).toContain(username().value);
     const modal = document.querySelector('.rules-modal')!;
-    fireEvent.click(screen.getByAltText('question-mark'));
+    fireEvent.click(screen.getByRole('button', { name: 'Contact rules' }));
     expect(modal.classList.contains('hidden')).toBe(false);
-    fireEvent.click(screen.getByAltText('question-mark'));
+    fireEvent.click(screen.getByRole('button', { name: 'Contact rules' }));
     expect(modal.classList.contains('hidden')).toBe(true);
 
     const contact = document.getElementById('identity')!;
@@ -178,31 +185,90 @@ describe('HomePage', () => {
   });
 });
 
-describe('inline whitespace of the legacy markup', () => {
-  // The legacy HTML had whitespace between these inline siblings and it renders as real spaces
-  // (about 5px each). JSX drops it silently, which shifted the username row and the LOG IN row.
-  const gaps = (parent: Element) =>
-    Array.from(parent.children)
-      .slice(0, -1)
-      .map((child) => child.nextSibling)
-      .map((node) => node?.nodeType === Node.TEXT_NODE && /^\s+$/.test(node.nodeValue ?? ''));
+describe('page structure', () => {
+  it('labels every field and keeps the form fields the game page reads', () => {
+    render(<HomePage />);
+    expect(screen.getByLabelText('Name')).toBe(username());
+    expect(screen.getByLabelText('Raced before? Log in with your Player ID.')).toBe(
+      document.getElementById('user-join-id'),
+    );
+    expect(screen.getByRole('switch', { name: /Girl names/ })).toBe(document.getElementById('name-toggler'));
+    const names = Array.from(form().elements)
+      .map((el) => (el as HTMLInputElement).name)
+      .filter(Boolean);
+    expect(new Set(names)).toEqual(new Set(['image', 'Device', 'username', 'identity']));
+    // the legacy key-hint images are real <kbd> hints now
+    expect(document.querySelectorAll('img:not(.avatars-select-image)')).toHaveLength(0);
+    expect(Array.from(document.querySelectorAll('kbd'), (k) => k.textContent)).toEqual(
+      expect.arrayContaining(['Enter', 'Alt', 'Ctrl', '`']),
+    );
+  });
+});
 
-  it('keeps a whitespace text node between every sibling of the username row', () => {
-    const { container } = render(<HomePage />);
-    const row = container.querySelector('#entry-form .details')!;
-    // children: p.max-char-warning, label, hidden input, username input, alt, ctrl, dice, switch
-    const siblings = Array.from(row.children);
-    expect(siblings.map((el) => el.tagName)).toEqual(['P', 'LABEL', 'INPUT', 'INPUT', 'IMG', 'IMG', 'IMG', 'LABEL']);
-    // legacy: whitespace after the warning paragraph is between block and inline content (ignored by layout), the
-    // gaps that matter are the ones between label ... switch
-    const g = gaps(row);
-    expect(g.slice(1)).toEqual([true, true, true, true, true, true]);
+describe('players online', () => {
+  it('follows the server count over a socket that never joins, and closes it on unmount', () => {
+    const f = createFakeSocketFactory();
+    const { unmount } = render(
+      <StrictMode>
+        <HomePage createSocket={f.factory} />
+      </StrictMode>,
+    );
+    // StrictMode mounts twice: the first socket is closed, one stays open
+    expect(f.live()).toHaveLength(1);
+    expect(document.querySelector('.players-online')).toBeNull();
+
+    act(() => f.last().receive('players online', 4));
+    expect(document.querySelector('.topbar .players-online-count')?.textContent).toBe('4');
+    expect(document.querySelector('.players-online')).toHaveAttribute('title', '4 players online');
+    act(() => f.last().receive('players online', 0));
+    expect(document.querySelector('.players-online-count')?.textContent).toBe('0');
+
+    expect(f.sockets.flatMap((s) => s.emitted)).toEqual([]);
+    unmount();
+    expect(f.live()).toHaveLength(0);
+    expect(f.last().listenerCount()).toBe(0);
+  });
+});
+
+describe('settings', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+    delete document.documentElement.dataset.theme;
   });
 
-  it('keeps a whitespace text node between the footer login input, key hint and button', () => {
-    const { container } = render(<HomePage />);
-    const form = container.querySelector('form#log-in')!;
-    expect(Array.from(form.children).map((el) => el.tagName)).toEqual(['INPUT', 'IMG', 'BUTTON']);
-    expect(gaps(form)).toEqual([true, true]);
+  it('applies and saves the picked theme, and keeps keys away from the page while open', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0); // avatar index 0
+    render(<HomePage />);
+    expect(document.documentElement.dataset.theme).toBe('dash');
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+    const dialog = screen.getByRole('dialog', { name: 'Settings' });
+
+    fireEvent.click(screen.getByRole('radio', { name: /Terminal/ }));
+    expect(document.documentElement.dataset.theme).toBe('terminal');
+    expect(localStorage.getItem('typedash:theme')).toBe('terminal');
+    expect(document.head.querySelector('link[data-theme-font*="Martian+Mono"]')).not.toBeNull();
+
+    // the page moves the avatar on arrow keys; inside the dialog they belong to the theme radios
+    fireEvent.keyDown(dialog, { key: 'ArrowRight' });
+    expect(checkedIndex()).toBe(0);
+
+    fireEvent.click(screen.getByRole('switch', { name: /Starfield/ }));
+    expect(localStorage.getItem('typedash:starfield')).toBe('off');
+
+    fireEvent.keyDown(dialog, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('starts from the saved theme', () => {
+    localStorage.setItem('typedash:theme', 'riso');
+    render(<HomePage />);
+    expect(document.documentElement.dataset.theme).toBe('riso');
+  });
+
+  it('falls back to the default theme for an unknown saved value', () => {
+    localStorage.setItem('typedash:theme', 'no-such-theme');
+    render(<HomePage />);
+    expect(document.documentElement.dataset.theme).toBe('dash');
   });
 });

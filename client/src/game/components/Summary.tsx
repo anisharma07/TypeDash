@@ -7,19 +7,17 @@ interface SummaryProps {
   accuracy: string;
 }
 
-/** Legacy `.showWpm` and `.chk_accuracy` blocks (both carry the `details` class). */
+/** The round result: speed and accuracy, shown once the player's round is over. */
 export function Summary({ visible, wpm, accuracy }: SummaryProps) {
   return (
     <>
       <div className={withHidden('showWpm details', !visible)}>
-        <h3>
-          Score: <strong id="wordsPerMinute">{wpm}</strong> wpm
-        </h3>
+        <strong id="wordsPerMinute">{wpm}</strong>
+        <span>wpm</span>
       </div>
       <div className={withHidden('chk_accuracy details', !visible)}>
-        <h3 className="acurate">
-          Accuracy: <strong id="terminal-accuracy">{accuracy}</strong>
-        </h3>
+        <strong id="terminal-accuracy">{accuracy}</strong>
+        <span>accuracy</span>
       </div>
     </>
   );

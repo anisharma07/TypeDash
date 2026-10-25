@@ -46,6 +46,8 @@ export function useGame({ search, createSocket, confirmLeave, navigate }: GameOp
   });
   const [serverWrongId, setServerWrongId] = useState(false);
   const [insufficientPlayers, setInsufficientPlayers] = useState(false);
+  /** null until the server first reports it */
+  const [playersOnline, setPlayersOnline] = useState<number | null>(null);
 
   const getSocketId = useCallback(() => socketRef.current?.id, []);
   const race = useRaceTrack(getSocketId);
@@ -95,6 +97,7 @@ export function useGame({ search, createSocket, confirmLeave, navigate }: GameOp
     'end game on request': round.endGame,
     'set player rank': ({ playerId, rank }) => race.setRank(playerId, rank),
     'update user leaderboard': refreshLeaderboard,
+    'players online': setPlayersOnline,
   };
 
   useGameSocket({ socketRef, createSocket, params, handlers });
@@ -113,6 +116,7 @@ export function useGame({ search, createSocket, confirmLeave, navigate }: GameOp
     // an unparsable join-id is reported locally, a rejected one by the server
     wrongId: serverWrongId || params.join.kind === 'invalid',
     insufficientPlayers,
+    playersOnline,
     race,
     leaderboard,
     ready,

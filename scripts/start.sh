@@ -5,7 +5,7 @@
 # 
 # Usage:
 #   ./start.sh         - Auto-detect database configuration and start
-#   ./start.sh --setup - Interactive daecho ""
+#   ./start.sh --setup - Interactive database setup
 #   ./start.sh -s      - Same as --setup
 
 echo "🚀 Starting Type Dash Application..."
@@ -17,6 +17,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+# cd to the repo root and pick the Compose command ($COMPOSE)
+source "$(dirname "$0")/compose.sh"
 
 # Function to check if a port is in use
 check_port() {
@@ -55,7 +58,7 @@ check_mongodb() {
     echo "🔍 Checking MongoDB connection..."
     
     # Try to connect to MongoDB and run a simple command
-    if docker exec typedash_mongo_1 mongosh --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+    if $COMPOSE --profile local-db exec -T mongo mongosh --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
         echo -e "${GREEN}✅ MongoDB is running and accessible${NC}"
         return 0
     else
@@ -72,8 +75,8 @@ show_status() {
     
     # Check Docker containers
     echo "🐳 Docker Containers:"
-    docker ps --filter "name=typedash" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
-    
+    $COMPOSE --profile "$PROFILE" ps
+
     echo ""
     
     # Get network IP addresses
@@ -186,16 +189,20 @@ fi
 
 # Start containers based on configuration
 if [ "$USE_ATLAS" = true ]; then
+    PROFILE=atlas
+    APP_SERVICE=app
     echo "🚀 Starting with cloud database..."
-    if docker-compose --profile atlas up --build -V -d; then
+    if $COMPOSE --profile atlas up --build -V -d; then
         echo -e "${GREEN}✅ Docker containers started successfully (Atlas mode)${NC}"
     else
         echo -e "${RED}❌ Failed to start Docker containers${NC}"
         exit 1
     fi
 else
+    PROFILE=local-db
+    APP_SERVICE=app-local
     echo "🚀 Starting with local database..."
-    if docker-compose --profile local-db up --build -V -d; then
+    if $COMPOSE --profile local-db up --build -V -d; then
         echo -e "${GREEN}✅ Docker containers started successfully (Local mode)${NC}"
     else
         echo -e "${RED}❌ Failed to start Docker containers${NC}"
@@ -212,7 +219,7 @@ if wait_for_service "http://localhost:2360" "Type Dash Application"; then
 else
     echo -e "${RED}❌ Application server failed to start${NC}"
     echo "📋 Checking logs..."
-    docker-compose logs app
+    $COMPOSE --profile "$PROFILE" logs "$APP_SERVICE"
     exit 1
 fi
 
@@ -226,7 +233,7 @@ else
     else
         echo -e "${RED}❌ MongoDB check failed${NC}"
         echo "📋 Checking MongoDB logs..."
-        docker-compose logs mongo
+        $COMPOSE --profile local-db logs mongo
         exit 1
     fi
 fi
@@ -240,7 +247,7 @@ echo "=================================="
 echo -e "${BLUE}🌐 Open your browser and visit: http://localhost:2360${NC}"
 echo ""
 echo "📋 Useful commands:"
-echo -e "${YELLOW}📊 View logs:        docker-compose logs -f${NC}"
+echo -e "${YELLOW}📊 View logs:        $COMPOSE --profile $PROFILE logs -f${NC}"
 echo -e "${YELLOW}� Check status:     ./scripts/status.sh${NC}"
 echo -e "${YELLOW}🛑 Stop application: ./scripts/stop.sh${NC}"
 echo -e "${YELLOW}🔄 Reconfigure DB:   ./scripts/start.sh --setup${NC}"

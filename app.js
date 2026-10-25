@@ -46,7 +46,14 @@ app.get("/get-users-leaderboard", async (req, res) => {
   const players = await Racer.find().sort({ highscore: -1 });
   res.json(players);
 });
+// Players in the game right now, for the "online" badge on both pages. Visitors of the home page connect
+// only to receive this count; they are not players until they join.
+function sendPlayersOnline(target) {
+  target.emit("players online", users.length);
+}
+
 io.on("connection", (socket) => {
+  sendPlayersOnline(socket);
   socket.on("join", ({ username, userAvatar, userIdentity }) => {
     const userJoinId = Number(getUniqueId());
     userJoin(socket.id, username, 0, userAvatar, userJoinId);
@@ -60,6 +67,7 @@ io.on("connection", (socket) => {
     socket.emit("joining id", userJoinId);
     io.emit("add user progress", users);
     io.emit("display board", users);
+    sendPlayersOnline(io);
     console.log("user-joined, " + users.length + " users on server");
   });
   socket.on("join by Id", (joinId) => {
@@ -73,6 +81,7 @@ io.on("connection", (socket) => {
         socket.emit("joining by id", joinId, data[0].username);
         io.emit("add user progress", users);
         io.emit("display board", users);
+        sendPlayersOnline(io);
         console.log("user-joined, " + users.length + " users on server");
       } else {
         socket.emit("wrong join id error");
@@ -205,6 +214,7 @@ io.on("connection", (socket) => {
     if (user) {
       io.emit("game users", usersArr);
       io.emit("remove user progress", users);
+      sendPlayersOnline(io);
       console.log("user-left" + " no. of users on server: " + users.length);
     }
   });

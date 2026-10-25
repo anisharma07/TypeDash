@@ -1,245 +1,208 @@
-<!-- PROJECT LOGO -->
-<br />
 <div align="center">
-  <a href="https://speed-type-wnz9.onrender.com">
-    <img src="https://res.cloudinary.com/dwwajleyo/image/upload/v1711745709/posters_and_assets/typedash_idsujz.png" alt="Logo" width="80">
+  <a href="https://typedash-81ar.onrender.com">
+    <img src="https://res.cloudinary.com/dwwajleyo/image/upload/v1711745709/posters_and_assets/typedash_idsujz.png" alt="Type Dash logo" width="80">
   </a>
 
   <h3 align="center">Type Dash</h3>
 
   <p align="center">
-    A 1v1 or group typing challenge game, created for conducting live Typing Race Events in an Exhibition or a Competition
+    A real-time multiplayer typing race, built for running live typing competitions at exhibitions, college fests and events.
     <br />
     <br />
-    <a href="https://youtu.be/lEh0KG50AsI?si=DnHKlQqClXtbN8BN">View Demo</a>
+    <a href="https://typedash-81ar.onrender.com"><strong>Live demo</strong></a>
     ·
-    <a href="https://github.com/anisharma07/TypeDash/issues">Report Bug</a>
+    <a href="https://youtu.be/lEh0KG50AsI?si=DnHKlQqClXtbN8BN">Video walkthrough</a>
     ·
-    <a href="https://typedash-81ar.onrender.com">Live Demo</a>
+    <a href="https://www.figma.com/design/PLxbmlfXFbZ33MHcqdyLHC/Type-Dash?node-id=0-1&t=BZFaK7r2I1Tiyvcj-1">Figma designs</a>
     ·
-    <a href="https://www.figma.com/design/PLxbmlfXFbZ33MHcqdyLHC/Type-Dash?node-id=0-1&t=BZFaK7r2I1Tiyvcj-1">UI Link</a>
+    <a href="https://github.com/anisharma07/TypeDash/issues">Report a bug</a>
   </p>
 </div>
 
-<!-- ABOUT THE PROJECT -->
+<img src="legacy/public/images/github.png" alt="Type Dash race screen">
 
-## About The Project
+> The live demo runs on a free Render instance and can take a minute to wake up on the first visit.
 
-Type Dash is a dynamic real-time multiplayer typing competition platform designed for conducting live typing race events in exhibitions, competitions, and casual gaming. Whether you're organizing a 1v1 duel or a group tournament, Type Dash provides an engaging space-themed environment where players can compete, improve their typing skills, and climb the leaderboard.
+## About
 
-<img src="/legacy/public/images/github.png" alt="Logo">
+Type Dash puts every connected player on the same space-themed race track. Everyone types the same text, and each
+player's avatar moves forward as they type, with WPM updating live for all players. When the race ends, each player
+sees their WPM and accuracy, and their best score goes on a persistent leaderboard.
 
-### Use Cases
+It works for a quick 1v1, and also for running a whole event. Players register once and get a 6-digit Player ID.
+They can come back with that ID for as many races as they like, and the leaderboard keeps each player's best WPM.
+Organisers can then hand out prizes from the final standings.
 
-**1v1 or 1vn Competition**: Players compete in real-time group typing competitions with instant results and rewards for winning players. Perfect for live events and competitions.
+## Features
 
-**All Players Competition**: Players compete in group competitions by registering with their unique Player ID. Type Dash stores the highest score for each registered user, allowing rewards to be distributed based on leaderboard rankings at the end of typing events.
+- **Live races.** Any number of players race on one shared track, with avatar positions and WPM updated in real time over Socket.IO.
+- **Persistent leaderboard.** Best WPM is stored per player in MongoDB, separately for each difficulty and for mobile vs laptop.
+- **Quick sign-up.** Pick a name (or roll a random one) and an avatar, and get a reusable 6-digit Player ID.
+- **Two difficulty levels.** Easy is 33 random words. Medium is a full quote with punctuation.
+- **Traffic-light countdown.** A short countdown starts the race once everyone is ready.
+- **Results screen.** Each player sees WPM and accuracy after every race.
+- **Keyboard-only play.** Every action has a shortcut, so an event can run without anyone touching a mouse.
+- **Space theme.** Animated particle starfield backgrounds built with tsParticles.
 
-### Key Features
+## How a race works
 
-🚀 **Real-Time Typing Challenges** - Compete with friends, family, or groups in live typing races
+1. **Join.** On the home page, enter a username (up to 10 characters) or roll a random one, pick an avatar, and add a
+   name or contact so organisers can reach winners. You get a 6-digit **Player ID**. Returning players type their
+   ID into the join box instead of registering again.
+2. **Pick a difficulty.** Each player picks Easy or Medium. When the race starts, the majority choice wins, and a tie goes to Easy.
+3. **Ready up.** Press <kbd>Enter</kbd> to mark yourself ready. The race starts once **every** connected player is
+   ready, and it needs at least two players.
+4. **Race.** Wait for the traffic light, then type. Everyone's progress and WPM update live on the track.
+5. **Results.** You see your WPM and accuracy. If it's a personal best for that difficulty and device type, the leaderboard updates.
 
-📊 **Leaderboard Rankings** - Stores and displays the highest scores for each player
+All players connected to a server share one lobby, so only one race runs at a time per server.
 
-🎮 **Easy Login System** - Quick player registration using unique Player ID from the home page
+## Keyboard shortcuts
 
-👨‍🚀 **Avatar Selection** - Choose from various avatars for better user experience with a space-like theme
+**Home page**
 
-⚡ **Live WPM Updates** - Real-time words per minute tracking and avatar movements on the race track
+| Key | Action |
+| --- | --- |
+| <kbd>Alt</kbd> | Roll a random username |
+| <kbd>Ctrl</kbd> | Switch between the two avatar sets |
+| Arrow keys | Choose an avatar |
+| <kbd>Tab</kbd> | Switch between the username and contact fields |
+| <kbd>`</kbd> | Jump to the Player ID box (returning players) |
 
-⌨️ **Shortcut Keys** - Complete mouseless experience with keyboard shortcuts
+**Race lobby**
 
-🎯 **Two Difficulty Levels** - Different sentence types to test typing performance on various characters (dots, commas, simple letters)
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> | Ready / not ready |
+| <kbd>Alt</kbd> | Switch difficulty |
+| <kbd>`</kbd> | Show / hide the leaderboard |
+| <kbd>Tab</kbd> | Switch the leaderboard between Easy and Medium |
+| <kbd>Ctrl</kbd> | Refresh the leaderboard |
+| <kbd>Esc</kbd> | Leave the game |
 
-🚦 **Traffic Light Timer** - Countdown indicator before starting matches to ensure all users are ready
+## Getting started
 
-🎲 **Random Avatar Names** - Quick sign-up with a variety of randomly generated avatar names
+### Option 1: Docker (recommended)
 
-📈 **Performance Analytics** - Shows WPM and accuracy statistics after completing matches
+You need Docker with the Compose plugin (`docker compose`). This builds the app and starts it together with a local MongoDB container:
 
-✨ **Optimized TsParticles** - Beautiful space-themed background with twinkling stars and particle effects
+```bash
+git clone https://github.com/anisharma07/TypeDash
+cd TypeDash
+docker compose --profile local-db up --build -V -d
+```
 
-Checkout the live link [here](https://speed-type-wnz9.onrender.com) (Note: It might take few minutes to load due to server inactivity).
+Open **http://localhost:2360**. Other devices on the same network can join at `http://<your-ip>:2360`.
 
-### Built With
+| Task | Command |
+| --- | --- |
+| View logs | `docker compose --profile local-db logs -f` |
+| Stop | `docker compose --profile local-db down` |
+| Rebuild after code changes | `docker compose --profile local-db up --build -V -d` |
+
+You can also use the helper scripts, which wrap these commands and check that the app and database respond:
+`./scripts/start.sh`, `./scripts/status.sh` and `./scripts/stop.sh`. If a `.env` with an Atlas URI exists, `start.sh`
+uses Atlas, and `./scripts/start.sh --setup` asks which database to use.
+
+Leaderboard data lives in the `mongo-data` Docker volume, so it survives restarts and rebuilds. Don't run `down -v`
+unless you mean to delete it.
+
+**Using MongoDB Atlas instead.** Put your connection string in a `.env` file and start the `atlas` profile, which runs the app without the local database:
+
+```bash
+echo 'MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/TypeDash' > .env
+docker compose --profile atlas up --build -V -d
+```
+
+> **Hosting on shared Wi-Fi?** `docker-compose.yml` publishes the local MongoDB on port `2701` of every network
+> interface, and it has no password. The app doesn't need that port, because it reaches the database over Docker's
+> internal network. To keep the database private, change the mongo port mapping to `"127.0.0.1:2701:27017"`.
+
+[DOCKER_INSTRUCTIONS.md](DOCKER_INSTRUCTIONS.md) explains how the image is built and how to clean up old volumes.
+
+### Option 2: Run with Node.js
+
+You need Node.js **22.13+, 24, or 26+** (Node 23 isn't supported by the test runner) and MongoDB, either local or Atlas.
+
+```bash
+git clone https://github.com/anisharma07/TypeDash
+cd TypeDash
+
+npm install          # server dependencies
+npm run build        # install and build the React client into client/dist
+
+echo 'MONGODB_URI=mongodb://localhost:27017/TypeDash' > .env
+npm start            # http://localhost:2360
+```
+
+See [DEVSETUP.md](DEVSETUP.md) for platform-specific MongoDB setup and troubleshooting.
+
+### Development
+
+Run the server and the Vite dev server in two terminals:
+
+```bash
+npm run dev          # Node server with auto-reload on :2360
+npm run client:dev   # Vite dev server with hot reload on :5173, proxies to :2360
+```
+
+Open http://localhost:5173 while developing. Run the client test suite (Vitest) with:
+
+```bash
+npm test
+```
+
+## Configuration
+
+| Variable | Where | Default | Purpose |
+| --- | --- | --- | --- |
+| `MONGODB_URI` | `.env` or environment | `mongodb://mongo:27017/TypeDash` in Docker | MongoDB connection string (required outside Docker) |
+| `PORT` | process environment only | `2360` | Server port, e.g. `PORT=3000 npm start`. Not read from `.env`. |
+| `TYPEDASH_SERVER` | process environment | `http://localhost:2360` | Where the Vite dev server proxies to, if the server isn't on 2360 |
+
+## Hosting a live event
+
+- **Same network.** Run Type Dash on one machine and share `http://<that-machine's-ip>:2360` with players on the same
+  Wi-Fi. The server logs its network address when it starts.
+- **Over the internet, temporarily.** Use a tunnel such as [ngrok](https://ngrok.com) (`ngrok http 2360`) and share the link it gives you.
+- **Permanently.** Deploy to any host that runs Docker or Node.js, such as Render, Railway or a VPS.
+  [docs/ops/railway.md](docs/ops/railway.md) has Railway notes.
+- **Display tip.** The UI is designed for large screens. If it looks cramped, zoom out with <kbd>Ctrl</kbd> <kbd>-</kbd>.
+
+## Tech stack
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-0db7ed?style=for-the-badge&logo=docker&logoColor=white)
 ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
 ![Adobe Illustrator](https://img.shields.io/badge/Adobe%20Illustrator-FF9A00?style=for-the-badge&logo=adobe%20illustrator&logoColor=white)
 
-<!-- GETTING STARTED -->
-
-## Getting Started
-
-Type Dash can be set up in multiple ways depending on your needs. Choose the setup method that works best for your environment:
-
-### 🚀 Quick Setup Options
-
-#### Option 1: Docker Setup (Recommended)
-
-Perfect for production and easy deployment with all dependencies included. View Complete Guide at [DOCKER_INSTRUCTIONS.md](DOCKER_INSTRUCTIONS.md)
-
-```bash
-# Clone the repository
-git clone https://github.com/anisharma07/TypeDash
-cd TypeDash
-
-# Start with Docker (includes MongoDB)
-chmod +x scripts/start.sh
-./scripts/start.sh
-
-# Access the application
-# Local: http://localhost:2360
-# Network: http://YOUR_IP:2360
-```
-
-#### Option 2: Manual Development Setup
-
-Best for development and customization. See [DEVSETUP.md](DEVSETUP.md) for detailed instructions.
-
-```bash
-# Clone the repository
-git clone https://github.com/anisharma07/TypeDash
-cd TypeDash
-
-# Install server dependencies, then install + build the React client
-npm install
-npm run build
-
-# Configure environment (creates the .env file the server reads)
-echo 'MONGODB_URI=mongodb://localhost:27017/TypeDash' > .env
-
-# Start the application (serves client/dist)
-npm start
-
-# Access the application
-# Local: http://localhost:2360
-# Network: http://YOUR_IP:2360
-```
-
-### Prerequisites
-
-**For Docker Setup:**
-
-- Docker & Docker Compose
-- Git
-
-**For Manual Setup:**
-
-- Node.js 22.13 or newer (22 LTS or 24; required by the client toolchain: Vite 8, Vitest and jsdom. Node 23 is not supported by the test runner)
-- npm or yarn
-- MongoDB (local or Atlas)
-- Git
-
-### Project Structure
+A single Node.js server (Express + Socket.IO) handles the live race state and stores players and high scores in
+MongoDB with Mongoose. The frontend is a React + TypeScript app built with Vite. In production the server serves the
+built files from `client/dist`.
 
 ```
 TypeDash/
-├── app.js            # Express + Socket.IO + MongoDB server (serves client/dist)
-├── utils/            # Server helpers (rooms, quotes, usernames)
-├── client/           # React + TypeScript + Vite frontend (two pages: home, game)
-│   ├── src/          # Components, game engine, typed socket protocol, tests
-│   └── dist/         # Build output served by the server (git-ignored)
+├── app.js            # Express + Socket.IO server; serves client/dist
+├── utils/            # Player state, MongoDB model, quotes and random names
+├── client/           # React + TypeScript + Vite frontend (home page and game page)
+│   └── src/          # Components, typing engine, typed socket protocol, tests
 ├── legacy/public/    # Original vanilla HTML/CSS/JS frontend (reference only)
-└── scripts/          # Docker start/stop/status helpers
+├── docs/             # Roadmap (docs/plan) and deployment notes (docs/ops)
+└── docker-compose.yml
 ```
 
-The frontend is a React app built with Vite. In production the Node server serves the
-built files from `client/dist`; in development the Vite dev server (port 5173) proxies
-socket and API traffic to the Node server (port 2360). Run `npm test` for the client tests.
+## Contributing
 
-### Environment Configuration
+Bug reports and pull requests are welcome. For anything bigger than a small fix, please
+[open an issue](https://github.com/anisharma07/TypeDash/issues) first so we can talk it through. Before you open a
+PR, make sure `npm test` passes and `npm --prefix client run typecheck` is clean.
 
-Create a `.env` file in the root directory:
+## License
 
-```env
-# For local MongoDB
-MONGODB_URI=mongodb://localhost:27017/TypeDash
-
-# For local development with docker (default)
-MONGODB_URI=mongodb://mongo:27017/TypeDash
-
-# For MongoDB Atlas
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/TypeDash
-
-# Optional configuration
-NODE_ENV=development
-```
-
-The server port is read from the process environment, not from `.env` (default `2360`): start it with
-`PORT=3000 npm start`. The Vite dev proxy (`npm run client:dev`) expects the server on `2360`; point it elsewhere
-with `TYPEDASH_SERVER=http://localhost:3000 npm run client:dev`.
-
-## Playing Suggestions
-
-### 1. Local Network Hosting
-
-- Copy the Network Ip from your computer, also logged when you run the application
-- Share the ip with your devices running the same wifi network.
-- Access the app on http://<your_ip_address>:2360
-
-### 2. NGROK
-
-- Install [ngrok](https://ngrok.com) and create a temporary link to the port where app is running...
-- share the link with your friends and enjoy typing...
-  <img src="/legacy/public/images/ng-rok.png" alt="ng-rok">
-
-### 3. Host on Cloud Service:
-
-- Use Aws or any other cloud service to host the application
-- Use the public Ip or domain from service provider to access the application online.
-
-<br/>
-
-#### For Optimal Visual Experience, I Recommend:
-
-To adjust screen size using
-
-```bash
-CTRL + or CTRL -
-```
-
-or using the zoom icon from the browser window
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com
+Released under the [MIT License](LICENSE).

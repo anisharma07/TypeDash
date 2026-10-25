@@ -5,12 +5,11 @@ interface DifficultySelectProps {
   onChange: (value: Difficulty) => void;
 }
 
-/** Legacy `.dropdown`: the Easy / Medium select that is sent with 'ready status'. */
+/** The Easy / Medium select that is sent with 'ready status'. */
 export function DifficultySelect({ value, onChange }: DifficultySelectProps) {
   return (
     <div className="dropdown">
-      <h3>Level:</h3>
-      <img src="/images/alt.png" alt="difficulty-change" className="difficulty-change-bind keyss" />
+      <label htmlFor="DifficultySelect">Level</label>
       <select
         name="cars"
         id="DifficultySelect"
@@ -20,6 +19,7 @@ export function DifficultySelect({ value, onChange }: DifficultySelectProps) {
         <option value="easy">Easy</option>
         <option value="medium">Medium</option>
       </select>
+      <kbd title="Switch level">Alt</kbd>
     </div>
   );
 }

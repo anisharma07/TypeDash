@@ -33,6 +33,7 @@ export const HANDLED_EVENTS = [
   'end game on request',
   'set player rank',
   'update user leaderboard',
+  'players online',
 ] as const satisfies readonly (keyof ServerToClientEvents)[];
 
 type HandledEvent = (typeof HANDLED_EVENTS)[number];
