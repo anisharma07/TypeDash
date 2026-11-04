@@ -22,7 +22,7 @@ fi
 
 echo "3/4 Building the gh-pages branch from $APP/..."
 git branch -D gh-pages-deploy > /dev/null 2>&1 || true
-git subtree split --prefix "$APP" -b gh-pages-deploy > /dev/null
+git subtree split -q --prefix "$APP" -b gh-pages-deploy
 
 echo "4/4 Pushing to origin/gh-pages..."
 git push --force origin gh-pages-deploy:gh-pages
