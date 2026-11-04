@@ -127,7 +127,9 @@
     U.clear(root).appendChild(h('div.page.profiles',
       h('div.page-head',
         h('div', h('span.kicker', 'Shared computer?'), h('h1', 'Learners'), h('p.muted', 'Each learner has their own progress, stats and settings. Perfect for families, classrooms and coaching.')),
-        h('a.btn.btn-primary', { href: '#/welcome' }, TD.icon('plus'), 'Add learner')),
+        h('div.head-actions',
+          h('a.btn.btn-ghost', { href: '#/backup' }, TD.icon('upload'), 'Import from backup'),
+          h('a.btn.btn-primary', { href: '#/welcome' }, TD.icon('plus'), 'Add learner'))),
       list));
     return {};
   }

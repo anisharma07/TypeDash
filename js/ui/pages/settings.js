@@ -53,21 +53,23 @@
       row('Daily practice goal', 'Counts towards your streak ring on the dashboard.', UI.segmented([5, 10, 15, 20, 30].map((m) => ({ value: m, label: m + ' min' })), S.dailyGoal, set('dailyGoal'), 'Daily goal')),
       row('Teacher mode: unlock all lessons', 'Open every episode without completing the previous one. Handy for coaches and for jumping around.', UI.toggle(S.unlockAll, set('unlockAll'))));
 
-    const fileInput = h('input', { type: 'file', accept: 'application/json,.json', hidden: true, on: { change: async (e) => {
-      const f = e.target.files[0];
-      if (!f) return;
-      const res = TD.store.importJSON(await U.readFile(f));
-      if (!res.ok) UI.toast(res.error, { icon: 'info', tone: 'gold' });
-      else { UI.toast((res.replaced ? 'Restored ' : 'Imported ') + res.profile.name + "'s progress.", { icon: 'check' }); location.hash = '#/'; }
-      fileInput.value = '';
-    } } });
+    const lastBackup = h('span', d.lastBackup ? 'Last backup ' + U.timeAgo(d.lastBackup) + '. ' : 'Never backed up. ', 'Save progress to a file, or import one from another browser.');
     const data = h('section.card',
       h('div.card-head', h('h2', TD.icon('download'), 'Your data')),
       h('p.muted.small', TD.store.isPersistent()
-        ? 'Progress is stored in this browser\'s local storage. Clearing site data deletes it, so export a backup now and then (and to move to another computer).'
-        : 'Local storage is blocked in this browser, so progress only lasts until you close the tab.'),
-      row('Export backup', 'Download this learner\'s progress as a JSON file.', h('button.btn', { type: 'button', on: { click: () => { U.download('typedash-academy-' + d.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '-' + U.dayKey() + '.json', TD.store.exportJSON()); } } }, TD.icon('download'), 'Export')),
-      row('Import backup', 'Restore or add a learner from a backup file.', h('div', h('button.btn', { type: 'button', on: { click: () => fileInput.click() } }, TD.icon('upload'), 'Import'), fileInput)),
+        ? 'Progress is stored in this browser\'s local storage. Clearing site data deletes it, so download a backup now and then (and to move to another computer).'
+        : 'Local storage is blocked in this browser, so progress only lasts until you close the tab. Download a backup before you leave.'),
+      row('Backup & transfer', lastBackup, h('div.inline-ctl',
+        h('button.btn', {
+          type: 'button',
+          on: { click: () => {
+            const b = TD.backup.download({ scope: 'learner' });
+            if (!b) return;
+            UI.toast(b.filename, { title: 'Backup downloaded', icon: 'download' });
+            lastBackup.firstChild.textContent = 'Last backup just now. ';
+          } },
+        }, TD.icon('download'), 'Download'),
+        h('a.btn.btn-primary', { href: '#/backup' }, TD.icon('upload'), 'Import & more'))),
       row('Reset progress', 'Erase lessons, stats and achievements for ' + d.name + '. Settings are kept.', h('button.btn.btn-danger', { type: 'button', on: { click: () => UI.confirm('Reset all progress?', 'This erases every lesson, star, stat and achievement for ' + d.name + '. It cannot be undone.', { ok: 'Reset progress', danger: true }).then((ok) => { if (ok) { TD.store.resetProgress(); UI.toast('Progress reset. Fresh start!', { icon: 'retry' }); location.hash = '#/'; } }) } }, TD.icon('trash'), 'Reset')));
 
     U.clear(root).appendChild(h('div.page.settings',

@@ -57,6 +57,9 @@
     h('div.field', h('span', 'Where are you starting?'), levels),
     err,
     startBtn,
+    h('div.restore-box',
+      h('span', h('b', 'Practised in another browser?'), ' Bring your progress here from a backup file.'),
+      h('a.btn.btn-ghost.btn-sm', { href: '#/backup' }, TD.icon('upload'), 'Restore from a backup')),
     hasProfiles ? h('a.btn.btn-ghost.btn-block.mt-8', { href: '#/profiles' }, TD.icon('left'), 'Back to profiles') : null);
 
     const kb = TD.ui.Keyboard({ compact: true });
@@ -230,9 +233,14 @@
         ? h('div.ach-row', got.slice(0, 8).map((a) => h('div.ach-mini', { title: a.title + ': ' + a.desc }, h('span.ach-emoji', a.icon), h('span', a.title))))
         : h('p.muted.small', 'Earn badges for finishing chapters, streaks and speed milestones.'));
 
+    // Gentle reminder once there is progress worth protecting and no recent backup.
+    const staleBackup = d.history.length >= 8 && (!d.lastBackup || Date.now() - d.lastBackup > 14 * 86400000);
     const page = h('div.page.dashboard',
       hero,
       !TD.store.isPersistent() ? h('div.notice.notice-warn', TD.icon('info'), 'This browser is blocking local storage, so progress will be lost when you close the tab. Try another browser or disable private mode.') : null,
+      staleBackup ? h('div.notice.notice-info.backup-nudge', TD.icon('download'),
+        h('span', d.lastBackup ? 'Your last backup was ' + U.timeAgo(d.lastBackup) + '. ' : 'Your progress lives only in this browser. ', 'Download a backup to keep it safe or continue on another device.'),
+        h('a.btn.btn-sm', { href: '#/backup' }, 'Back up now')) : null,
       h('div.dash-grid', cont, todayCard, tiles, weakCard, reviewCard, recentCard, achCard));
     U.clear(root).appendChild(page);
     return {};

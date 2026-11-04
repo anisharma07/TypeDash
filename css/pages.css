@@ -355,6 +355,54 @@
 .avatar-grid-sm { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); }
 .about { margin-top: 26px; text-align: center; }
 
+/* ------------------------------------------------------------------ backup & transfer */
+.bsteps { list-style: none; padding: 0; margin: 0 0 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.bstep { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); }
+.bstep strong { display: block; font-size: 14.5px; }
+.bstep-num { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.backup-cols { margin-top: 0; }
+.exp-summary { font-weight: 500; margin: 12px 0 6px; }
+.include-list { list-style: none; padding: 0; margin: 10px 0 14px; display: grid; gap: 6px; font-size: 14px; color: var(--text-2); }
+.include-list li { display: flex; align-items: center; gap: 8px; }
+.include-list .ico { width: 16px; height: 16px; color: var(--accent); stroke-width: 2.6; }
+.dropzone {
+  display: grid; justify-items: center; gap: 6px; padding: 30px 18px; margin-top: 12px; text-align: center; cursor: pointer;
+  border: 2px dashed var(--line-2); border-radius: var(--radius); background: var(--bg-elev);
+  transition: border-color 0.15s, background 0.15s;
+}
+.dropzone:hover, .dropzone:focus-visible { border-color: var(--accent); }
+.dropzone.drag { border-color: var(--accent); background: var(--accent-soft); }
+.dropzone > .ico { width: 34px; height: 34px; color: var(--accent); }
+.dropzone strong { font-size: 15.5px; }
+.import-preview:empty { display: none; }
+.import-preview { margin-top: 14px; }
+.ip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 14px; }
+.ip-head code { word-break: break-all; }
+.import-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; margin-top: 12px; padding: 14px; border-radius: var(--radius); background: var(--bg-elev); border: 1px solid var(--line); }
+.ii-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.ii-head strong { font-size: 16px; }
+.ii-sum { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+.ii-tag { display: inline-block; min-width: 118px; margin-right: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
+.ii-opts { display: grid; gap: 6px; margin-top: 12px; }
+.ii-opt { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; border-radius: 11px; border: 1px solid var(--line); cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.ii-opt:hover { border-color: var(--line-2); }
+.ii-opt.on { border-color: var(--accent); background: var(--accent-soft); }
+.ii-opt input { accent-color: var(--accent); margin-top: 4px; flex: none; }
+.ii-opt strong { display: block; font-size: 14px; font-weight: 600; }
+.ii-opt small { display: block; font-size: 12.5px; color: var(--text-2); }
+.result-list { margin-top: 6px; gap: 2px; }
+.result-list li { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.linkish { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.linkish:hover { text-decoration: none; }
+.tips-card { margin-top: 18px; }
+.tips-card .g-list { font-size: 14.5px; line-height: 1.6; }
+.restore-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--surface); border: 1px dashed var(--line-2); font-size: 13.5px; color: var(--text-2); }
+.restore-box b { color: var(--text); }
+.backup-nudge { align-items: center; }
+.backup-nudge .btn { margin-left: auto; flex: none; }
+@media (max-width: 900px) { .bsteps { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .ii-tag { display: block; min-width: 0; } .import-item { grid-template-columns: 1fr; } }
+
 /* ------------------------------------------------------------------ certificate */
 .cert-page { max-width: 1000px; }
 .certificate { position: relative; background: #fffdf6; color: #1d2333; border-radius: 18px; padding: 22px; box-shadow: var(--shadow); overflow: hidden; }

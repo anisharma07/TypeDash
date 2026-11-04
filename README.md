@@ -38,7 +38,7 @@ Use Chrome, Edge, Firefox or Safari (2023 or later) with a **physical keyboard**
 - **Challenges**: official 15/30/60/120-second tests, ghost race, WPM milestones, 34 achievements and a printable certificate.
 - **Statistics**: speed and accuracy trends, practice minutes, an activity calendar, a keyboard heatmap (mistakes or speed), per-finger accuracy and speed, hand balance and **Typing DNA** (strongest/weakest keys, slowest transitions, common slips, typing style).
 - **Multiple learners on one device**, each with their own progress, plus a local leaderboard. This makes it suitable for families, classrooms and coaching.
-- **Backups**: export or import a learner's progress as JSON from Settings.
+- **Backup & transfer**: download your progress as a file and import it into any other browser or computer (or the same browser) to carry on where you left off. See [Moving to another browser](#moving-to-another-browser).
 
 ---
 
@@ -112,9 +112,31 @@ Everything stays in the browser on this device:
 
 - `tda:index` lists the learner profiles.
 - `tda:profile:<id>` holds one learner's progress, stats and settings.
+- `tda:undo-import` holds a temporary snapshot so the last import can be undone (kept for 24 hours).
 
-Clearing site data erases progress, so use **Settings → Export backup** regularly. The same backup moves a learner to another computer.
-When `index.html` is opened from disk, the browser ties saved progress to the file's location. Keep the folder in one place, and export a backup before moving it.
+Clearing site data erases progress, so download a backup now and then. When `index.html` is opened from disk, the browser ties saved progress to the file's location. Keep the folder in one place, and download a backup before moving it.
+
+### Moving to another browser
+
+Open **Backup & transfer**. It's in Settings, on the Learners page, and on the welcome screen of a new browser.
+
+1. **Download a backup** in the browser you have been using. You can include just the current learner or every learner on the device. The file is a small `.json` file named like `typedash-academy-mia-2026-11-04.json`.
+2. **Move the file** to the other device: USB stick, email, cloud drive or chat.
+3. **Import it** in the other browser. A brand-new browser offers *Restore from a backup* on its welcome screen, so there's no need to create a learner first. Drag the file onto the page or choose it.
+
+Before anything changes, the import shows what the file contains and lets you pick an action for each learner:
+
+| Action | When it's offered | What it does |
+| --- | --- | --- |
+| **Import** | The learner isn't in this browser yet | Adds them. The learner keeps the same identity, so later imports can merge. |
+| **Merge** (default for a known learner) | The same learner is already here | Keeps the best of both copies: every finished lesson, the highest stars, speeds and records, all sessions and practice days, guides read and achievements. This browser's settings stay. Use it when you practise on two devices. |
+| **Replace** | The same learner is already here | Makes this browser match the file exactly. Progress made here after the backup is lost. |
+| **Import as a copy / separate learner** | The learner (or a learner with the same name) is already here | Adds a second learner alongside the existing one. |
+| **Skip** | Always | Leaves that learner out. |
+
+After an import you can **undo** it with one click (available for 24 hours), which restores this browser exactly as it was. The same flow restores progress in the **same browser**, for example after clearing browsing data or resetting a learner by mistake.
+
+Files are checked when imported. Anything that isn't a TypeDash Academy backup is rejected, a file that looks edited or damaged shows a warning, and every imported value is validated. Backups from earlier versions of the app still import. Nothing is uploaded anywhere: the file stays on your devices unless you share it.
 
 ---
 
@@ -126,10 +148,10 @@ typedash-academy/
 ├── css/                    tokens (themes, finger colours), base, player, pages
 ├── js/
 │   ├── core/               util, keyboard model, storage, generator, engine, stats, sound,
-│   │                       course logic, practice plans, achievements
+│   │                       course logic, practice plans, achievements, backup & transfer
 │   ├── data/               words.js · texts.js · guides.js · curriculum.js  (all course content)
 │   ├── ui/components/      icons, toasts/modals, charts, keyboard + hands, typing view
-│   ├── ui/pages/           player, dashboard/onboarding, learn/guides, practice, challenges, stats, settings
+│   ├── ui/pages/           player, dashboard/onboarding, learn/guides, practice, challenges, stats, settings, backup
 │   └── app.js              routes, navigation, theme
 ├── assets/                 fonts (Poppins, Bangers, Roboto Mono, bundled for offline use), avatars, favicon
 ├── docs/CONTENT-SPEC.md    how to write or change lessons, guides, word lists and texts

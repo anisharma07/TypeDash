@@ -71,17 +71,39 @@
       placement: null,     // { wpm, acc, t }
       totals: { ks: 0, ch: 0, ms: 0, sessions: 0 },
       onboarded: false,
+      lastBackup: null,    // timestamp of the last exported backup
     };
   }
 
+  // Everything loaded (including imported backups) is normalised: unknown or invalid values fall back to defaults.
+  const AVATAR_RE = /^avatar([1-9]|1[0-5])$/;
+  const CHOICES = { theme: ['dark', 'light', 'system'], errorMode: ['auto', 'stop', 'correct', 'advance'], fontSize: ['s', 'm', 'l', 'xl'], caret: ['line', 'block', 'underline'] };
+  const OBJECT_FIELDS = ['episodes', 'guides', 'keys', 'bigrams', 'confusions', 'daily', 'records', 'achievements'];
+  function sanitize(p) {
+    p.id = String(p.id).slice(0, 40);
+    p.name = String(p.name || 'Learner').trim().slice(0, 24) || 'Learner';
+    if (!AVATAR_RE.test(p.avatar || '')) p.avatar = 'avatar1';
+    const s = p.settings;
+    Object.keys(CHOICES).forEach((k) => { if (!CHOICES[k].includes(s[k])) s[k] = DEFAULT_SETTINGS[k]; });
+    Object.keys(DEFAULT_SETTINGS).forEach((k) => { if (typeof DEFAULT_SETTINGS[k] === 'boolean' && typeof s[k] !== 'boolean') s[k] = DEFAULT_SETTINGS[k]; });
+    s.volume = Number.isFinite(Number(s.volume)) ? Math.max(0, Math.min(1, Number(s.volume))) : DEFAULT_SETTINGS.volume;
+    s.dailyGoal = [5, 10, 15, 20, 30].includes(Number(s.dailyGoal)) ? Number(s.dailyGoal) : DEFAULT_SETTINGS.dailyGoal;
+    OBJECT_FIELDS.forEach((k) => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
+    if (!Array.isArray(p.history)) p.history = [];
+    p.history = p.history.filter((x) => x && typeof x === 'object' && Number.isFinite(x.t));
+    Object.keys(p.totals).forEach((k) => { p.totals[k] = Number(p.totals[k]) || 0; });
+    p.unlockedThrough = Math.max(0, Math.min(12, Math.floor(Number(p.unlockedThrough) || 0)));
+    return p;
+  }
+
   function migrate(p) {
-    if (!p || typeof p !== 'object') return null;
+    if (!p || typeof p !== 'object' || !p.id) return null;
     const base = blankProfile(p.name, p.avatar);
     for (const k of Object.keys(base)) if (p[k] == null) p[k] = base[k];
-    p.settings = Object.assign({}, DEFAULT_SETTINGS, p.settings || {});
-    p.totals = Object.assign({}, base.totals, p.totals || {});
+    p.settings = Object.assign({}, DEFAULT_SETTINGS, p.settings && typeof p.settings === 'object' ? p.settings : {});
+    p.totals = Object.assign({}, base.totals, p.totals && typeof p.totals === 'object' ? p.totals : {});
     p.v = VERSION;
-    return p;
+    return sanitize(p);
   }
 
   // ------------------------------------------------------------------ state
@@ -190,24 +212,52 @@
       U.bus.emit('profile:changed', current);
     },
 
-    exportJSON() {
-      save();
-      return JSON.stringify({ app: 'typedash-academy', version: VERSION, exported: new Date().toISOString(), profile: current }, null, 1);
-    },
-    /** Imports a backup. Returns { ok, error, profile, replaced }. */
-    importJSON(text) {
-      let parsed;
-      try { parsed = JSON.parse(text); } catch (e) { return { ok: false, error: 'That file is not valid JSON.' }; }
-      const p = parsed && parsed.app === 'typedash-academy' ? parsed.profile : null;
-      if (!p || !p.id || !p.settings) return { ok: false, error: 'That file is not a TypeDash Academy backup.' };
-      const replaced = index.list.some((e) => e.id === p.id);
-      const migrated = migrate(p);
-      if (current && current.id !== migrated.id) save();
-      current = migrated;
-      index.active = migrated.id;
-      save();
+    // ---------------------------------------------------------------- low-level helpers for backup & transfer
+    /** Deep-copied, migrated and sanitised copy of any profile-like object (null if unusable). */
+    normalize: (p) => { try { return migrate(JSON.parse(JSON.stringify(p))); } catch (e) { return null; } },
+    /** Raw stored JSON for a profile id (null if none). */
+    rawProfile: (id) => ls.get(PROFILE_KEY(id)),
+    /** Write a whole profile. Returns false if the browser refused (storage full). */
+    putProfile(p, opts) {
+      const m = store.normalize(p);
+      if (!m) return false;
+      if (m.history.length > HISTORY_CAP) m.history.splice(0, m.history.length - HISTORY_CAP);
+      if (!ls.set(PROFILE_KEY(m.id), JSON.stringify(m))) return false;
+      syncIndexEntry(m);
+      if ((opts && opts.activate) || !current) { current = m; index.active = m.id; } else if (current.id === m.id) current = m;
+      writeIndex();
       U.bus.emit('profile:changed', current);
-      return { ok: true, profile: migrated, replaced };
+      return true;
+    },
+    /** Remember when these learners were last backed up. */
+    markBackup(ids, t) {
+      ids.forEach((id) => {
+        if (current && current.id === id) { current.lastBackup = t; save(); return; }
+        const p = load(id);
+        if (p) { p.lastBackup = t; ls.set(PROFILE_KEY(id), JSON.stringify(p)); }
+      });
+    },
+    /** Undo support: the index plus raw profile JSON (null = did not exist) for the given ids. */
+    snapshot(ids) {
+      save();
+      const raws = {};
+      ids.forEach((id) => { raws[id] = ls.get(PROFILE_KEY(id)); });
+      return { t: Date.now(), index: JSON.parse(JSON.stringify(index)), raws };
+    },
+    restoreSnapshot(snap) {
+      Object.entries(snap.raws).forEach(([id, raw]) => { if (raw == null) ls.del(PROFILE_KEY(id)); else ls.set(PROFILE_KEY(id), raw); });
+      index = JSON.parse(JSON.stringify(snap.index));
+      current = index.active ? load(index.active) : null;
+      if (!current && index.list.length) current = load(index.list[0].id);
+      index.active = current ? current.id : null;
+      writeIndex();
+      U.bus.emit('profile:changed', current);
+    },
+    /** Small key/value slot in the same safe storage (used for the undo snapshot). */
+    kv: {
+      get: (k) => readJSON('tda:' + k),
+      set: (k, v) => ls.set('tda:' + k, JSON.stringify(v)),
+      del: (k) => ls.del('tda:' + k),
     },
   };
 
