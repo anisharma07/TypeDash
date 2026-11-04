@@ -1,0 +1,11 @@
+{
+  "name": "TypeDash Academy",
+  "short_name": "TypeDash",
+  "description": "Offline touch-typing course: 12 chapters, 76 episodes, adaptive drills and speed tests.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070914",
+  "theme_color": "#070914",
+  "icons": [{ "src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
