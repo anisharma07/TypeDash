@@ -1,0 +1,169 @@
+/* TypeDash Academy — fonts and design tokens. Dark is the default (TypeDash space theme). */
+
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 400; font-display: swap; src: url('../assets/fonts/poppins-400.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 500; font-display: swap; src: url('../assets/fonts/poppins-500.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap; src: url('../assets/fonts/poppins-600.woff2') format('woff2'); }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap; src: url('../assets/fonts/poppins-700.woff2') format('woff2'); }
+@font-face { font-family: 'Bangers'; font-style: normal; font-weight: 400; font-display: swap; src: url('../assets/fonts/bangers-400.woff2') format('woff2'); }
+@font-face { font-family: 'Roboto Mono'; font-style: normal; font-weight: 100 700; font-display: swap; src: url('../assets/fonts/roboto-mono-var.woff2') format('woff2'); }
+
+:root {
+  color-scheme: dark;
+  --font-ui: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-display: 'Bangers', 'Poppins', system-ui, sans-serif;
+
+  --bg: #070914;
+  --bg-elev: #0b0e1d;
+  --panel: #10142a;
+  --panel-2: #161b36;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.07);
+  --surface-3: rgba(255, 255, 255, 0.11);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.15);
+  --text: #e9edf7;
+  --text-2: #aeb6cc;
+  --text-3: #7d86a2;
+
+  --accent: #8fd43a;          /* TypeDash green, brightened for dark backgrounds */
+  --accent-strong: #72b01d;   /* original TypeDash green */
+  --accent-soft: rgba(143, 212, 58, 0.12);
+  --accent-line: rgba(143, 212, 58, 0.32);
+  --accent-ink: #0d1a00;
+  --violet: #9b8cff;
+  --violet-soft: rgba(155, 140, 255, 0.14);
+  --gold: #ffc940;
+  --gold-soft: rgba(255, 201, 64, 0.13);
+  --red: #ff6170;
+  --red-soft: rgba(255, 97, 112, 0.16);
+  --orange: #ffa94d;
+  --blue: #5cc8ff;
+  --blue-soft: rgba(92, 200, 255, 0.12);
+  --good: #0ca30c;
+
+  /* finger zones */
+  --f-lp: #f472b6;
+  --f-lr: #fb923c;
+  --f-lm: #facc15;
+  --f-li: #4ade80;
+  --f-ri: #22d3ee;
+  --f-rm: #60a5fa;
+  --f-rr: #a78bfa;
+  --f-rp: #fb7185;
+  --f-th: #94a3b8;
+
+  /* keyboard & hands */
+  --key-bg: #161b33;
+  --key-line: rgba(255, 255, 255, 0.10);
+  --hand-fill: #1a2040;
+  --hand-line: rgba(255, 255, 255, 0.22);
+
+  /* typing */
+  --type-size: 30px;
+  --type-pending: #6c7592;
+  --type-ok: #eef2fb;
+  --type-blind: #aeb6cc;
+  --caret: #8fd43a;
+
+  /* charts (validated: dark surface #10142a) */
+  --viz-1: #62a524;
+  --viz-2: #7f70e8;
+  --viz-muted: #5d6684;
+  --viz-critical: #d03b3b;
+  --viz-grid: rgba(255, 255, 255, 0.07);
+  --viz-axis: rgba(255, 255, 255, 0.18);
+  --cal-0: rgba(255, 255, 255, 0.06);
+  --cal-1: #24401a;
+  --cal-2: #356a1f;
+  --cal-3: #4c8f22;
+  --cal-4: #79c437;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.25);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+:root[data-size='s'] { --type-size: 24px; }
+:root[data-size='l'] { --type-size: 36px; }
+:root[data-size='xl'] { --type-size: 42px; }
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f3f5fb;
+  --bg-elev: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f2f4fa;
+  --surface: rgba(18, 23, 41, 0.03);
+  --surface-2: rgba(18, 23, 41, 0.055);
+  --surface-3: rgba(18, 23, 41, 0.09);
+  --line: rgba(18, 23, 41, 0.09);
+  --line-2: rgba(18, 23, 41, 0.16);
+  --text: #121729;
+  --text-2: #475170;
+  --text-3: #6f7894;
+
+  --accent: #4b870f;
+  --accent-strong: #3f760a;
+  --accent-soft: rgba(75, 135, 15, 0.10);
+  --accent-line: rgba(75, 135, 15, 0.30);
+  --accent-ink: #ffffff;
+  --violet: #6b5cf0;
+  --violet-soft: rgba(107, 92, 240, 0.10);
+  --gold: #d39a00;
+  --gold-soft: rgba(211, 154, 0, 0.12);
+  --red: #d92d43;
+  --red-soft: rgba(217, 45, 67, 0.10);
+  --orange: #d9730d;
+  --blue: #1b84c9;
+  --blue-soft: rgba(27, 132, 201, 0.10);
+
+  --f-lp: #db2777;
+  --f-lr: #ea580c;
+  --f-lm: #ca8a04;
+  --f-li: #16a34a;
+  --f-ri: #0891b2;
+  --f-rm: #2563eb;
+  --f-rr: #7c3aed;
+  --f-rp: #e11d48;
+  --f-th: #64748b;
+
+  --key-bg: #ffffff;
+  --key-line: rgba(18, 23, 41, 0.14);
+  --hand-fill: #eef1f8;
+  --hand-line: rgba(18, 23, 41, 0.22);
+
+  --type-pending: #8f97ae;
+  --type-ok: #121729;
+  --type-blind: #475170;
+  --caret: #4b870f;
+
+  /* charts (validated: light surface #ffffff) */
+  --viz-1: #4f8f12;
+  --viz-2: #6b5cf0;
+  --viz-muted: #a3aabd;
+  --viz-grid: #e9ebf2;
+  --viz-axis: #c9cdd8;
+  --cal-0: #eceff5;
+  --cal-1: #d3e9bf;
+  --cal-2: #a6d17f;
+  --cal-3: #6faa3a;
+  --cal-4: #3f760a;
+
+  --shadow: 0 18px 40px rgba(18, 23, 41, 0.10);
+  --shadow-sm: 0 4px 14px rgba(18, 23, 41, 0.07);
+}
+
+/* Finger colour lookup for any element carrying data-f. */
+[data-f='lp'] { --fc: var(--f-lp); }
+[data-f='lr'] { --fc: var(--f-lr); }
+[data-f='lm'] { --fc: var(--f-lm); }
+[data-f='li'] { --fc: var(--f-li); }
+[data-f='ri'] { --fc: var(--f-ri); }
+[data-f='rm'] { --fc: var(--f-rm); }
+[data-f='rr'] { --fc: var(--f-rr); }
+[data-f='rp'] { --fc: var(--f-rp); }
+[data-f='th'] { --fc: var(--f-th); }
