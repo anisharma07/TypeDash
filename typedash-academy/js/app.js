@@ -83,10 +83,12 @@
     .add('stats', '/stats', page(TD.pages.stats))
     .add('settings', '/settings', page(TD.pages.settings))
     .add('profiles', '/profiles', page(TD.pages.profiles))
+    .add('backup', '/backup', page(TD.pages.backup))
     .add('certificate', '/certificate', page(TD.pages.certificate));
 
   TD.router.guard((path) => {
-    if (!TD.store.get() && path !== '/welcome') return '/welcome';
+    // Without a learner only onboarding and restoring a backup are available.
+    if (!TD.store.get() && path !== '/welcome' && path !== '/backup') return '/welcome';
     return null;
   });
 
@@ -98,7 +100,7 @@
   U.bus.on('storage:error', () => TD.ui.kit.toast('Could not save progress: browser storage is full or blocked. Export a backup from Settings.', { icon: 'info', tone: 'gold', timeout: 7000 }));
 
   function titleFor(path) {
-    const map = { '/': 'Dashboard', '/learn': 'Learn', '/practice': 'Practice', '/challenges': 'Challenges', '/stats': 'Statistics', '/settings': 'Settings', '/profiles': 'Learners', '/welcome': 'Welcome', '/guides': 'Guides', '/certificate': 'Certificate' };
+    const map = { '/': 'Dashboard', '/learn': 'Learn', '/practice': 'Practice', '/challenges': 'Challenges', '/stats': 'Statistics', '/settings': 'Settings', '/profiles': 'Learners', '/welcome': 'Welcome', '/guides': 'Guides', '/certificate': 'Certificate', '/backup': 'Backup & transfer' };
     let t = map[path];
     if (!t && path.startsWith('/episode/')) { const ep = TD.course.episode(path.split('/')[2]); t = ep ? ep.id + ' ' + ep.title : 'Lesson'; }
     if (!t && path.startsWith('/guide/')) { const g = TD.course.guide(path.split('/')[2]); t = g ? g.title : 'Guide'; }
